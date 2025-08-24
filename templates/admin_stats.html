@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+{% block content %}
+<h1 class="h5 mb-3">آمار ارسال‌ها</h1>
+<div class="card shadow-sm">
+  <div class="card-body table-responsive">
+    <table class="table align-middle">
+      <thead>
+        <tr>
+          <th>تمرین</th>
+          <th>تعداد ارسال</th>
+          <th>میانگین درست‌ها</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for r in rows %}
+          <tr>
+            <td>{{ r.hw }}</td>
+            <td>{{ r.submissions }}</td>
+            <td>{{ '%.2f'|format(r.avg_correct or 0) }}</td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+{% endblock %}

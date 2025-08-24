@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="card shadow-sm">
+  <div class="card-body">
+    <h1 class="h5 mb-3">نتیجه تصحیح</h1>
+    <ul class="list-group list-group-flush mb-3">
+      <li class="list-group-item">نام: <strong>{{ name }}</strong></li>
+      <li class="list-group-item">شماره دانشجویی: <strong>{{ student_id }}</strong></li>
+      <li class="list-group-item">رشته: <strong>{{ major }}</strong></li>
+      <li class="list-group-item">تمرین: <strong>{{ hw }}</strong></li>
+      <li class="list-group-item">تاریخ: <strong>{{ time }}</strong></li>
+    </ul>
+
+    <div class="alert alert-info">درست‌ها: <strong>{{ correct }}</strong> از <strong>{{ total }}</strong></div>
+
+    {% if incorrect %}
+      <div class="alert alert-warning">سوال‌های اشتباه: {{ ", ".join(incorrect | map('string')) }}</div>
+    {% else %}
+      <div class="alert alert-success">🎉 همه پاسخ‌ها صحیح است!</div>
+    {% endif %}
+
+    <div class="mt-3">
+      <span class="badge text-bg-secondary">ارسال‌های انجام‌شده: {{ done }}/10</span>
+      <span class="badge text-bg-secondary">ارسال‌های باقی‌مانده: {{ remaining }}</span>
+    </div>
+
+    <div class="mt-3 d-flex gap-2">
+      <a class="btn btn-primary" href="{{ url_for('submit') }}">ارسال تمرین جدید</a>
+      <a class="btn btn-outline-secondary" href="{{ url_for('index') }}">صفحه اصلی</a>
+    </div>
+  </div>
+</div>
+{% endblock %}
