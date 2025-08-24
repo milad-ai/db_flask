@@ -150,8 +150,8 @@ def submit():
             conn.execute(
                 text(
                     """
-INSERT INTO student_results (student_id, name, hw, correct_count)
-VALUES (:student_id, :name, :hw, :correct_count)
+INSERT INTO student_results (student_id, name, major, hw, correct_count)
+VALUES (:student_id, :name, :major, :hw, :correct_count)
                     """
                 ),
                 {
