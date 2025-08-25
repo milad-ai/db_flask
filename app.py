@@ -3,16 +3,13 @@ import re
 from datetime import datetime
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from sqlalchemy import create_engine, text
-from werkzeug.utils import secure_filename
 
 # ==================== تنظیمات ====================
 DB_URI = os.environ.get("DB_URI")
 if not DB_URI:
-    raise ValueError("DB_URI must be set!")
+    DB_URI = "sqlite:///./local_test.db"
 
 engine = create_engine(DB_URI)
-
-ALLOWED_EXTENSIONS = {"sql"}
 
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "dev-secret-change-me")
@@ -22,19 +19,16 @@ MAJORS = ["علوم کامپیوتر", "آمار"]
 HW_NUMBERS = ["3", "4", "5", "6"]
 
 WELCOME_MD = (
-    "🎓 سامانهٴ درس پایگاه داده\n\n"
-    "برای دانشجویان ترم ۱۴۰۴–۱۴۰۵ دانشگاه شهید بهشتی، دانشکده ریاضی\n\n"
-    "**راهنما:**\n"
-    "۱) رشته، ۲) نام و شماره دانشجویی، ۳) شماره تمرین، ۴) ارسال SQL (متن یا فایل .sql)\n\n"
-    "⚠️ قبل از هر سوال در SQL حتماً کامنت `# number X` بگذارید.\n\n"
-    "**نمونه:**\n\n"
+    "🎓 سامانهٴ درس پایگاه داده \n\n"
+    "⚠️ هر سؤال را با کامنت `# number X` جدا کنید.\n\n"
+    "نمونه:\n\n"
     "```\n# number 1\nSELECT id, name FROM students;\n\n# number 2\nSELECT COUNT(*) FROM students;\n```\n"
 )
 
-# ==================== کمک‌ها ====================
-def allowed_file(filename: str) -> bool:
-    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
-
+def parse_queries(sql_text: str):
+    splits = re.split(r"#\s*number\s*\d+", sql_text, flags=re.IGNORECASE)
+    queries = [q.strip().rstrip(";") + ";" for q in splits if q.strip()]
+    return queries
 
 def get_submission_count(student_id: str, hw: str) -> int:
     try:
@@ -52,18 +46,8 @@ def get_submission_count(student_id: str, hw: str) -> int:
         app.logger.error(f"Error getting submission count: {e}")
         return 0
 
-
-def parse_queries(sql_text: str):
-    # همان منطق شما: تقسیم بر اساس # number X
-    splits = re.split(r"#\s*number\s*\d+", sql_text, flags=re.IGNORECASE)
-    queries = [q.strip().rstrip(";") + ";" for q in splits if q.strip()]
-    return queries
-
-
-# ==================== مسیرها ====================
 @app.route("/")
 def index():
-    # فرم مرحله‌ای را ساده‌سازی کردیم: همه فیلدها در یک صفحه
     return render_template(
         "index.html",
         majors=MAJORS,
@@ -71,13 +55,11 @@ def index():
         welcome_md=WELCOME_MD,
     )
 
-
 @app.route("/submit", methods=["GET", "POST"])
 def submit():
     if request.method == "GET":
         return render_template("submit.html", majors=MAJORS, hw_numbers=HW_NUMBERS)
 
-    # POST
     name = request.form.get("name", "").strip()
     student_id = request.form.get("student_id", "").strip()
     major = request.form.get("major")
@@ -85,7 +67,6 @@ def submit():
     sql_text = request.form.get("sql_text", "")
     file = request.files.get("sql_file")
 
-    # اعتبارسنجی مقدماتی
     if not name or not student_id or major not in MAJORS or hw not in HW_NUMBERS:
         flash("لطفاً همه فیلدها را به‌درستی پر کنید.", "danger")
         return redirect(url_for("submit"))
@@ -98,24 +79,22 @@ def submit():
 
     # دریافت SQL از فایل یا تکست
     if file and file.filename:
-        if not allowed_file(file.filename):
+        if not file.filename.lower().endswith(".sql"):
             flash("لطفاً فایل .sql معتبر ارسال کنید.", "danger")
             return redirect(url_for("submit"))
-        filename = secure_filename(file.filename)
         sql_text = file.stream.read().decode("utf-8")
 
     if not sql_text.strip():
         flash("متن SQL خالی است.", "danger")
         return redirect(url_for("submit"))
 
-    # پردازش SQL
     queries = parse_queries(sql_text)
 
     correct_count = 0
     incorrect_questions = []
 
     with engine.begin() as conn:
-        # ایجاد جدول نتایج در صورت نبود
+        # ایجاد جدول نتایج در صورت نبود (با ستون major)
         conn.execute(text(
             """
             CREATE TABLE IF NOT EXISTS student_results (
@@ -130,10 +109,12 @@ def submit():
             """
         ))
 
-        # مقایسه نتایج هر کوئری با جدول مرجع
+        # انتخاب پسوند جدول مرجع بر اساس رشته
+        suffix = "stat" if major == "آمار" else "cs"
+
         for i, student_query in enumerate(queries):
             qnum = i + 1
-            reference_table = f"hw{hw}_q{qnum}_reference"
+            reference_table = f"hw{hw}_q{qnum}_{suffix}_reference"
             try:
                 student_rows = conn.execute(text(student_query)).fetchall()
                 reference_rows = conn.execute(text(f"SELECT * FROM {reference_table}")).fetchall()
@@ -150,8 +131,8 @@ def submit():
             conn.execute(
                 text(
                     """
-INSERT INTO student_results (student_id, name, major, hw, correct_count)
-VALUES (:student_id, :name, :major, :hw, :correct_count)
+                    INSERT INTO student_results (student_id, name, major, hw, correct_count)
+                    VALUES (:student_id, :name, :major, :hw, :correct_count)
                     """
                 ),
                 {
@@ -169,7 +150,6 @@ VALUES (:student_id, :name, :major, :hw, :correct_count)
     new_submission_count = submission_count + 1
     remaining = 10 - new_submission_count
 
-    # نگهداری در session برای صفحه نتیجه
     session["result"] = {
         "name": name,
         "student_id": student_id,
@@ -184,7 +164,6 @@ VALUES (:student_id, :name, :major, :hw, :correct_count)
     }
     return redirect(url_for("result"))
 
-
 @app.route("/result")
 def result():
     data = session.get("result")
@@ -192,25 +171,20 @@ def result():
         return redirect(url_for("index"))
     return render_template("result.html", **data)
 
-
-# صفحهٔ سادهٔ آمار برای مدرس/ادمین (اختیاری)
 @app.route("/admin/stats")
 def admin_stats():
+    # آمار تفکیک‌شده بر اساس رشته و تمرین
     try:
         with engine.begin() as conn:
             rows = conn.execute(text(
                 """
-                SELECT hw, COUNT(*) AS submissions, AVG(correct_count) AS avg_correct
+                SELECT major, hw, COUNT(*) AS submissions, AVG(correct_count) AS avg_correct
                 FROM student_results
-                GROUP BY hw
-                ORDER BY hw
+                GROUP BY major, hw
+                ORDER BY major, hw
                 """
             )).mappings().all()
     except Exception as e:
         flash(f"خطا در بارگذاری آمار: {e}", "danger")
         rows = []
     return render_template("admin_stats.html", rows=rows)
-
-# توجه: در Ploomber نباید app.run بنویسید
-# if __name__ == "__main__":
-#     app.run(debug=True)
