@@ -1,22 +1,13 @@
 {% extends 'base.html' %}
 {% block content %}
-<div class="row g-4 align-items-start">
-  <div class="col-lg-7">
+<div class="row g-4">
+  <div class="col-12 col-lg-7">
     <div class="card shadow-sm">
       <div class="card-body">
-        <h1 class="h4 mb-3">خوش آمدید 🎉</h1>
-        <p class="text-secondary">این سامانه جایگزین ربات تلگرام است.</p>
-        <a href="{{ url_for('submit') }}" class="btn btn-primary">شروع ارسال تمرین</a>
+        <h1 class="h5 mb-3">🎓 سامانه تمرین پایگاه داده</h1>
+        <pre class="bg-light p-3 rounded">{{ welcome_md }}</pre>
+        <a href="{{ url_for('submit') }}" class="btn btn-primary mt-2">ارسال تمرین</a>
       </div>
     </div>
   </div>
-  <div class="col-lg-5">
-    <div class="card shadow-sm">
-      <div class="card-body">
-        <h2 class="h5">راهنما</h2>
-        <pre class="bg-light p-3 rounded small" style="white-space: pre-wrap;">{{ welcome_md }}</pre>
-      </div>
-    </div>
-  </div>
-</div>
 {% endblock %}
