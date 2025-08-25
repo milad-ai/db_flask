@@ -19,10 +19,8 @@ MAJORS = ["علوم کامپیوتر", "آمار"]
 HW_NUMBERS = ["3", "4", "5", "6"]
 
 WELCOME_MD = (
-    "🎓 سامانهٴ درس پایگاه داده \n\n"
-    "⚠️ هر سؤال را با کامنت `# number X` جدا کنید.\n\n"
-    "نمونه:\n\n"
-    "```\n# number 1\nSELECT id, name FROM students;\n\n# number 2\nSELECT COUNT(*) FROM students;\n```\n"
+    "نمونه ارسال درست:\n\n"
+    "\n# number 1\nSELECT id, name FROM students;\n\n# number 2\nSELECT COUNT(*) FROM students;\n\n"
 )
 
 def parse_queries(sql_text: str):
