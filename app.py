@@ -6,12 +6,12 @@ from flask import Flask, render_template, request, redirect, url_for, flash, ses
 from sqlalchemy import create_engine, text
 
 # ==================== تنظیمات ====================
-DB_URI = os.environ.get("DB_URI", "sqlite:///./local_test.db")
+DB_URI = os.environ.get("DB_URI", "sqlite:///local_test.db")
 engine = create_engine(DB_URI)
+
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "dev-secret-change-me")
 
-# دکمه‌ها و رشته‌ها
 MAJORS = ["علوم کامپیوتر", "آمار"]
 HW_NUMBERS = ["3", "4", "5", "6"]
 
@@ -20,8 +20,7 @@ WELCOME_MD = (
     "\n# number 1\nSELECT id, name FROM students;\n\n# number 2\nSELECT COUNT(*) FROM students;\n\n"
 )
 
-# ==================== توابع کمکی ====================
-
+# ==================== توابع ====================
 def parse_queries(sql_text: str):
     splits = re.split(r"#\s*number\s*\d+", sql_text, flags=re.IGNORECASE)
     queries = [q.strip().rstrip(";") + ";" for q in splits if q.strip()]
@@ -43,74 +42,102 @@ def get_submission_count(student_id: str, hw: str) -> int:
         app.logger.error(f"Error getting submission count: {e}")
         return 0
 
-def authenticate(student_id: str, password: str):
-    """بررسی شماره دانشجویی و پسورد و برگرداندن نام و رشته"""
-    try:
+# ==================== مسیرها ====================
+@app.route("/login", methods=["GET", "POST"])
+def login():
+    if request.method == "POST":
+        student_id = request.form.get("student_id", "").strip()
+        password = request.form.get("password", "").strip()
         with engine.begin() as conn:
             row = conn.execute(
                 text("SELECT name, major FROM stuid WHERE student_id=:sid AND pass=:pwd"),
                 {"sid": student_id, "pwd": password}
             ).fetchone()
             if row:
-                return row[0], row[1]  # name, major
-            return None, None
-    except Exception as e:
-        app.logger.error(f"Auth error: {e}")
-        return None, None
-
-# ==================== روت‌ها ====================
-
-@app.route("/", methods=["GET", "POST"])
-def login():
-    if request.method == "POST":
-        student_id = request.form.get("student_id", "").strip()
-        password = request.form.get("password", "").strip()
-        if not student_id or not password:
-            flash("لطفاً شماره دانشجویی و رمز عبور را وارد کنید.", "danger")
-            return redirect(url_for("login"))
-
-        name, major = authenticate(student_id, password)
-        if not name:
-            flash("شماره دانشجویی یا رمز عبور اشتباه است.", "danger")
-            return redirect(url_for("login"))
-
-        session["student_id"] = student_id
-        session["name"] = name
-        session["major"] = major
-        return redirect(url_for("submit"))
-    
+                session["student_id"] = student_id
+                session["name"] = row[0]
+                session["major"] = row[1]
+                flash(f"ورود موفق! خوش آمدی {row[0]}", "success")
+                return redirect(url_for("dashboard"))
+            else:
+                flash("شماره دانشجویی یا رمز عبور اشتباه است.", "danger")
     return render_template("login.html")
+
+@app.route("/dashboard")
+def dashboard():
+    student_id = session.get("student_id")
+    if not student_id:
+        flash("ابتدا وارد شوید.", "danger")
+        return redirect(url_for("login"))
+    return render_template(
+        "dashboard.html",
+        student_id=student_id,
+        name=session.get("name"),
+        major=session.get("major")
+    )
+
+@app.route("/register_email", methods=["GET", "POST"])
+def register_email():
+    student_id = session.get("student_id")
+    if not student_id:
+        flash("ابتدا وارد شوید.", "danger")
+        return redirect(url_for("login"))
+
+    if request.method == "POST":
+        email = request.form.get("email", "").strip()
+        if not email:
+            flash("لطفاً ایمیل را وارد کنید.", "danger")
+            return redirect(url_for("register_email"))
+        try:
+            with engine.begin() as conn:
+                conn.execute(
+                    text("UPDATE stuid SET email = :email WHERE student_id = :student_id"),
+                    {"email": email, "student_id": student_id}
+                )
+            flash("ایمیل شما با موفقیت ثبت شد.", "success")
+        except Exception as e:
+            flash(f"خطا در ثبت ایمیل: {e}", "danger")
+        return redirect(url_for("dashboard"))
+
+    # ایمیل فعلی
+    email_value = None
+    with engine.begin() as conn:
+        row = conn.execute(
+            text("SELECT email FROM stuid WHERE student_id = :student_id"),
+            {"student_id": student_id}
+        ).fetchone()
+        if row:
+            email_value = row[0]
+    return render_template("register_email.html", email_value=email_value)
 
 @app.route("/submit", methods=["GET", "POST"])
 def submit():
-    if "student_id" not in session:
-        flash("لطفاً ابتدا وارد شوید.", "warning")
+    student_id = session.get("student_id")
+    name = session.get("name")
+    major = session.get("major")
+    if not student_id:
+        flash("ابتدا وارد شوید.", "danger")
         return redirect(url_for("login"))
 
-    student_id = session["student_id"]
-    name = session["name"]
-    major = session["major"]
-
     if request.method == "GET":
-        return render_template("submit.html", majors=MAJORS, hw_numbers=HW_NUMBERS, name=name, student_id=student_id, major=major)
+        return render_template("submit.html", majors=MAJORS, hw_numbers=HW_NUMBERS)
 
     hw = request.form.get("hw")
     sql_text = request.form.get("sql_text", "")
     file = request.files.get("sql_file")
 
     if hw not in HW_NUMBERS:
-        flash("تمرین معتبر انتخاب کنید.", "danger")
+        flash("شماره تمرین معتبر انتخاب کنید.", "danger")
         return redirect(url_for("submit"))
 
     submission_count = get_submission_count(student_id, hw)
     if submission_count >= 10:
         flash(f"شما قبلاً ۱۰ بار تمرین {hw} را ارسال کرده‌اید.", "warning")
-        return redirect(url_for("submit"))
+        return redirect(url_for("dashboard"))
 
-    # دریافت SQL
     if file and file.filename:
         if not file.filename.lower().endswith(".sql"):
-            flash("فایل معتبر .sql ارسال کنید.", "danger")
+            flash("لطفاً فایل .sql معتبر ارسال کنید.", "danger")
             return redirect(url_for("submit"))
         sql_text = file.stream.read().decode("utf-8")
 
@@ -123,8 +150,7 @@ def submit():
     incorrect_questions = []
 
     with engine.begin() as conn:
-        conn.execute(text(
-            """
+        conn.execute(text("""
             CREATE TABLE IF NOT EXISTS student_results (
                 id SERIAL PRIMARY KEY,
                 student_id TEXT NOT NULL,
@@ -134,11 +160,9 @@ def submit():
                 correct_count INTEGER NOT NULL,
                 submission_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
-            """
-        ))
+        """))
 
         suffix = "stat" if major == "آمار" else "cs"
-
         for i, student_query in enumerate(queries):
             qnum = i + 1
             reference_table = f"hw{hw}_q{qnum}_{suffix}_reference"
@@ -154,15 +178,22 @@ def submit():
                 incorrect_questions.append(qnum)
 
         conn.execute(
-            text(
-                "INSERT INTO student_results (student_id, name, major, hw, correct_count) "
-                "VALUES (:student_id, :name, :major, :hw, :correct_count)"
-            ),
-            {"student_id": student_id, "name": name, "major": major, "hw": hw, "correct_count": correct_count},
+            text("""
+                INSERT INTO student_results (student_id, name, major, hw, correct_count)
+                VALUES (:student_id, :name, :major, :hw, :correct_count)
+            """),
+            {
+                "student_id": student_id,
+                "name": name,
+                "major": major,
+                "hw": hw,
+                "correct_count": correct_count,
+            }
         )
 
     new_submission_count = submission_count + 1
     remaining = 10 - new_submission_count
+
     session["result"] = {
         "name": name,
         "student_id": student_id,
@@ -181,22 +212,24 @@ def submit():
 def result():
     data = session.get("result")
     if not data:
-        return redirect(url_for("submit"))
+        return redirect(url_for("dashboard"))
     return render_template("result.html", **data)
 
 @app.route("/admin/stats")
 def admin_stats():
     try:
         with engine.begin() as conn:
-            rows = conn.execute(text(
-                """
+            rows = conn.execute(text("""
                 SELECT major, hw, COUNT(*) AS submissions, AVG(correct_count) AS avg_correct
                 FROM student_results
                 GROUP BY major, hw
                 ORDER BY major, hw
-                """
-            )).mappings().all()
+            """)).mappings().all()
     except Exception as e:
         flash(f"خطا در بارگذاری آمار: {e}", "danger")
         rows = []
     return render_template("admin_stats.html", rows=rows)
+
+# ==================== اجرای اپلیکیشن ====================
+if __name__ == "__main__":
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)), debug=True)
