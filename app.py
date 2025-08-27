@@ -77,9 +77,21 @@ def login():
         session["student_id"] = student_id
         session["name"] = name
         session["major"] = major
-        return redirect(url_for("submit"))
+        return redirect(url_for("dashboard"))
     
     return render_template("login.html")
+
+@app.route("/dashboard")
+def dashboard():
+    if "student_id" not in session:
+        flash("ابتدا وارد شوید.", "warning")
+        return redirect(url_for("login"))
+    return render_template(
+        "dashboard.html",
+        name=session["name"],
+        student_id=session["student_id"],
+        major=session["major"]
+    )
 
 @app.route("/submit", methods=["GET", "POST"])
 def submit():
@@ -176,9 +188,10 @@ def submit():
         "time": datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC"),
     }
     return redirect(url_for("result"))
+
 @app.route("/register_email", methods=["GET", "POST"])
 def register_email():
-    student_id = request.args.get("student_id") or session.get("student_id")
+    student_id = session.get("student_id")
     if not student_id:
         flash("ابتدا وارد شوید.", "danger")
         return redirect(url_for("login"))
@@ -187,7 +200,7 @@ def register_email():
         email = request.form.get("email", "").strip()
         if not email:
             flash("لطفاً ایمیل را وارد کنید.", "danger")
-            return redirect(url_for("register_email", student_id=student_id))
+            return redirect(url_for("register_email"))
 
         try:
             with engine.begin() as conn:
@@ -198,9 +211,8 @@ def register_email():
             flash("ایمیل شما با موفقیت ثبت شد.", "success")
         except Exception as e:
             flash(f"خطا در ثبت ایمیل: {e}", "danger")
-        return redirect(url_for("register_email", student_id=student_id))
+        return redirect(url_for("register_email"))
 
-    # اگر قبلاً ایمیل ثبت شده بود
     email_value = None
     with engine.begin() as conn:
         row = conn.execute(
@@ -211,6 +223,7 @@ def register_email():
             email_value = row[0]
 
     return render_template("register_email.html", student_id=student_id, email_value=email_value)
+
 @app.route("/result")
 def result():
     data = session.get("result")
