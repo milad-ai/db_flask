@@ -176,7 +176,41 @@ def submit():
         "time": datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S UTC"),
     }
     return redirect(url_for("result"))
+@app.route("/register_email", methods=["GET", "POST"])
+def register_email():
+    student_id = request.args.get("student_id") or session.get("student_id")
+    if not student_id:
+        flash("ابتدا وارد شوید.", "danger")
+        return redirect(url_for("login"))
 
+    if request.method == "POST":
+        email = request.form.get("email", "").strip()
+        if not email:
+            flash("لطفاً ایمیل را وارد کنید.", "danger")
+            return redirect(url_for("register_email", student_id=student_id))
+
+        try:
+            with engine.begin() as conn:
+                conn.execute(
+                    text("UPDATE stuid SET email = :email WHERE student_id = :student_id"),
+                    {"email": email, "student_id": student_id}
+                )
+            flash("ایمیل شما با موفقیت ثبت شد.", "success")
+        except Exception as e:
+            flash(f"خطا در ثبت ایمیل: {e}", "danger")
+        return redirect(url_for("register_email", student_id=student_id))
+
+    # اگر قبلاً ایمیل ثبت شده بود
+    email_value = None
+    with engine.begin() as conn:
+        row = conn.execute(
+            text("SELECT email FROM stuid WHERE student_id = :student_id"),
+            {"student_id": student_id}
+        ).fetchone()
+        if row:
+            email_value = row[0]
+
+    return render_template("register_email.html", student_id=student_id, email_value=email_value)
 @app.route("/result")
 def result():
     data = session.get("result")
