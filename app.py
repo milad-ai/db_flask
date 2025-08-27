@@ -8,6 +8,14 @@ from sqlalchemy import create_engine, text
 # ==================== تنظیمات ====================
 DB_URI = os.environ.get("DB_URI", "sqlite:///./local_test.db")
 engine = create_engine(DB_URI)
+engine = create_engine(DB_URI)
+
+try:
+    with engine.begin() as conn:
+        conn.execute(text("SELECT 1"))
+except:
+    pass
+
 app = Flask(__name__)
 app.secret_key = os.environ.get("SECRET_KEY", "dev-secret-change-me")
 
