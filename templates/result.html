@@ -1,24 +1,24 @@
-{% extends 'base.html' %}
+
+{% extends "base.html" %}
 {% block content %}
-<div class="card shadow-sm">
-  <div class="card-body">
-    <h1 class="h5 mb-3">نتیجهٔ تصحیح</h1>
-    <ul class="list-unstyled">
-      <li>👤 دانشجو: <strong>{{ name }}</strong></li>
-      <li>🆔 شماره دانشجویی: <strong>{{ student_id }}</strong></li>
-      <li>📚 رشته: <strong>{{ major }}</strong></li>
-      <li>📝 تمرین: <strong>{{ hw }}</strong></li>
-      <li>🕐 زمان ثبت: <strong>{{ time }}</strong></li>
-    </ul>
-    <hr>
-    <p class="mb-1">📊 نتیجه: <strong>{{ correct }}/{{ total }}</strong> پاسخ صحیح</p>
-    {% if incorrect %}
-      <p class="mb-1">❌ سوال‌های اشتباه: {{ incorrect|join(", ") }}</p>
-    {% else %}
-      <p class="mb-1 text-success">🎉 تبریک! تمام پاسخ‌ها درست است.</p>
-    {% endif %}
-    <p class="mb-0">📈 تعداد ارسال‌های انجام شده: {{ done }}/10 — باقی‌مانده: {{ remaining }}</p>
-    <a class="btn btn-outline-primary mt-3" href="{{ url_for('submit') }}">ارسال تمرین جدید</a>
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <div class="card p-4">
+      <h3 class="mb-3 text-center">نتیجه تمرین</h3>
+      <p>دانشجو: {{ name }} | شماره دانشجویی: {{ student_id }} | رشته: {{ major }}</p>
+      <p>تمرین: {{ hw }}</p>
+      <p>تعداد سوال‌ها: {{ total }}</p>
+      <p>تعداد پاسخ صحیح: {{ correct }}</p>
+      {% if incorrect %}
+        <p>سوال‌های نادرست: {{ incorrect|join(", ") }}</p>
+      {% else %}
+        <p>🎉 تمام سوال‌ها صحیح است!</p>
+      {% endif %}
+      <p>تعداد ارسال‌های انجام شده: {{ done }}/10</p>
+      <p>تعداد ارسال‌های باقی‌مانده: {{ remaining }}</p>
+      <p>زمان ثبت: {{ time }}</p>
+      <a href="{{ url_for('submit') }}" class="btn btn-primary w-100 mt-3">ارسال تمرین جدید</a>
+    </div>
   </div>
 </div>
 {% endblock %}
