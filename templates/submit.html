@@ -1,52 +1,29 @@
-{% extends 'base.html' %}
+
+{% extends "base.html" %}
 {% block content %}
-<div class="card shadow-sm">
-  <div class="card-body">
-    <h1 class="h5 mb-3">ارسال تمرین</h1>
-    <form method="post" enctype="multipart/form-data" class="row g-3">
-      <div class="col-md-6">
-        <label class="form-label">نام و نام خانوادگی</label>
-        <input name="name" class="form-control" required>
-      </div>
-      <div class="col-md-6">
-        <label class="form-label">شماره دانشجویی</label>
-        <input name="student_id" class="form-control" required>
-      </div>
-      <div class="col-md-6">
-        <label class="form-label">رشته</label>
-        <select name="major" class="form-select" required>
-          <option value="" selected disabled>انتخاب کنید…</option>
-          {% for m in majors %}
-            <option value="{{ m }}">{{ m }}</option>
-          {% endfor %}
-        </select>
-      </div>
-      <div class="col-md-6">
-        <label class="form-label">شماره تمرین</label>
-        <select name="hw" class="form-select" required>
-          <option value="" selected disabled>انتخاب کنید…</option>
-          {% for n in hw_numbers %}
-            <option value="{{ n }}">{{ n }}</option>
-          {% endfor %}
-        </select>
-      </div>
-      <div class="col-12">
-        <label class="form-label">متن SQL</label>
-        <textarea name="sql_text" 
-          class="form-control" 
-          rows="8" 
-          placeholder="# number 1 ..."
-          style="direction: ltr; text-align: left;"></textarea>
-        <div class="form-text">می‌توانید به‌جای متن، فایل .sql هم بارگذاری کنید.</div>
-      </div>
-      <div class="col-12">
-        <label class="form-label">فایل .sql (اختیاری)</label>
-        <input type="file" name="sql_file" class="form-control" accept=".sql">
-      </div>
-      <div class="col-12">
-        <button class="btn btn-success">ارسال</button>
-      </div>
-    </form>
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <div class="card p-4">
+      <h3 class="mb-3 text-center">ارسال تمرین</h3>
+      <p>دانشجو: {{ name }} | رشته: {{ major }} | شماره دانشجویی: {{ student_id }}</p>
+      <form method="POST" enctype="multipart/form-data">
+        <div class="mb-3">
+          <label class="form-label">انتخاب تمرین</label>
+          <select name="hw" class="form-select">
+            {% for h in hw_numbers %}
+              <option value="{{ h }}">تمرین {{ h }}</option>
+            {% endfor %}
+          </select>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">SQL (متن یا فایل)</label>
+          <textarea name="sql_text" class="form-control" rows="6" placeholder="# number 1 ..."></textarea>
+          <input type="file" name="sql_file" class="form-control mt-2">
+        </div>
+        <button type="submit" class="btn btn-success w-100">ارسال</button>
+      </form>
+      <pre class="mt-3">{{ welcome_md }}</pre>
+    </div>
   </div>
 </div>
 {% endblock %}
