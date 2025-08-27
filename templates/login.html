@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="row justify-content-center">
+  <div class="col-md-5">
+    <div class="card p-4">
+      <h3 class="mb-3 text-center">ورود دانشجو</h3>
+      <form method="POST">
+        <div class="mb-3">
+          <label class="form-label">شماره دانشجویی</label>
+          <input type="text" name="student_id" class="form-control" required>
+        </div>
+        <div class="mb-3">
+          <label class="form-label">رمز عبور</label>
+          <input type="password" name="password" class="form-control" required>
+        </div>
+        <button type="submit" class="btn btn-primary w-100">ورود</button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}
