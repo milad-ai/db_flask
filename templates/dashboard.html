@@ -1,18 +1,28 @@
 
 {% extends "base.html" %}
 {% block content %}
-<div class="card p-4 shadow-sm mb-4">
-    <h4>👤 خوش آمدید، {{ name }}</h4>
-    <p>🆔 شماره دانشجویی: {{ student_id }}</p>
-    <p>📚 رشته: {{ major }}</p>
+<div class="card p-4 shadow-sm mb-4 text-center">
+    <h4 class="mb-2">👋 خوش آمدید، {{ name }}</h4>
+    <p class="mb-1">🆔 شماره دانشجویی: <strong>{{ student_id }}</strong></p>
+    <p class="mb-0">📚 رشته: <strong>{{ major }}</strong></p>
 </div>
 
-<div class="mb-3">
-    <a href="{{ url_for('submit') }}" class="btn btn-success me-2">🚀 ارسال تمرین</a>
-    <a href="{{ url_for('register_email') }}" class="btn btn-primary">📧 ثبت ایمیل اطلاع‌رسانی</a>
-    <a href="{{ url_for('change_password') }}" class="btn btn-warning mb-2">تغییر رمز عبور</a>
-    <a href="{{ url_for('admin_stats') }}" class="btn btn-warning">آمار</a> 
-    <a href="{{ url_for('logout') }}" class="btn btn-secondary">خروج</a>
+<div class="d-flex flex-wrap justify-content-center gap-3 mb-4">
+    <a href="{{ url_for('submit') }}" class="btn btn-success btn-lg shadow-sm">
+        🚀 ارسال تمرین
+    </a>
+    <a href="{{ url_for('register_email') }}" class="btn btn-primary btn-lg shadow-sm">
+        📧 ثبت ایمیل اطلاع‌رسانی
+    </a>
+    <a href="{{ url_for('change_password') }}" class="btn btn-warning btn-lg shadow-sm">
+        🔑 تغییر رمز عبور
+    </a>
+    <a href="{{ url_for('admin_stats') }}" class="btn btn-info btn-lg shadow-sm">
+        📊 آمار تمرین‌ها
+    </a>
+    <a href="{{ url_for('logout') }}" class="btn btn-danger btn-lg shadow-sm">
+        🚪 خروج
+    </a>
 </div>
 
 {% endblock %}
