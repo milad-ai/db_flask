@@ -1,4 +1,5 @@
 
+
 <!doctype html>
 <html lang="fa" dir="rtl">
   <head>
@@ -16,6 +17,16 @@
     <nav class="navbar navbar-expand-lg bg-body-tertiary mb-4">
       <div class="container">
         <a class="navbar-brand" href="{{ url_for('login') }}">DB-HW</a>
+
+        
+        <div class="collapse navbar-collapse">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+            <li class="nav-item">
+              <a class="nav-link" href="{{ url_for('admin_stats') }}">آمار</a>
+            </li>
+          </ul>
+        </div>
+
       </div>
     </nav>
 
