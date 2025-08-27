@@ -1,13 +1,13 @@
-{% extends 'base.html' %}
+
+{% extends "base.html" %}
 {% block content %}
-<div class="row g-4">
-  <div class="col-12 col-lg-7">
-    <div class="card shadow-sm">
-      <div class="card-body">
-        <h1 class="h5 mb-3">🎓 سامانه تمرین پایگاه داده</h1>
-        <pre class="bg-light p-3 rounded">{{ welcome_md }}</pre>
-        <a href="{{ url_for('submit') }}" class="btn btn-primary mt-2">ارسال تمرین</a>
-      </div>
-    </div>
+<div class="card p-4">
+  <h4>👋 خوش آمدید، {{ name }}</h4>
+  <p>📚 رشته: {{ major }} | 🆔 شماره دانشجویی: {{ student_id }}</p>
+
+  <div class="mt-3">
+    <a href="{{ url_for('submit') }}" class="btn btn-success me-2">ارسال تمرین</a>
+    <a href="{{ url_for('register_email', student_id=student_id) }}" class="btn btn-primary">ثبت ایمیل اطلاع‌رسانی</a>
   </div>
+</div>
 {% endblock %}
