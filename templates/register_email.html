@@ -1,0 +1,14 @@
+
+{% extends "base.html" %}
+{% block content %}
+<div class="card p-4">
+  <h4>ثبت ایمیل اطلاع‌رسانی</h4>
+  <form method="post">
+    <div class="mb-3">
+      <label for="email" class="form-label">ایمیل</label>
+      <input type="email" class="form-control" id="email" name="email" value="{{ email_value or '' }}" required>
+    </div>
+    <button type="submit" class="btn btn-primary">ثبت ایمیل</button>
+  </form>
+</div>
+{% endblock %}
