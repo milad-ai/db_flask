@@ -247,3 +247,9 @@ def admin_stats():
         flash(f"خطا در بارگذاری آمار: {e}", "danger")
         rows = []
     return render_template("admin_stats.html", rows=rows)
+
+@app.route("/logout")
+def logout():
+    session.clear()
+    flash("با موفقیت خارج شدید.", "success")
+    return redirect(url_for("login"))
