@@ -7,8 +7,8 @@ from sqlalchemy import create_engine, text
 
 # ==================== تنظیمات ====================
 DB_URI = os.environ.get("DB_URI", "sqlite:///./local_test.db")
-engine = create_engine(DB_URI)
-engine = create_engine(DB_URI)
+engine = create_engine(DB_URI, pool_pre_ping=True)
+
 
 try:
     with engine.begin() as conn:
