@@ -1,14 +1,18 @@
 
 {% extends "base.html" %}
 {% block content %}
-<div class="card p-4">
-  <h4>ثبت ایمیل اطلاع‌رسانی</h4>
-  <form method="post">
-    <div class="mb-3">
-      <label for="email" class="form-label">ایمیل</label>
-      <input type="email" class="form-control" id="email" name="email" value="{{ email_value or '' }}" required>
-    </div>
-    <button type="submit" class="btn btn-primary">ثبت ایمیل</button>
-  </form>
+<div class="card p-4 shadow-sm mb-4">
+    <h4>📧 ثبت ایمیل اطلاع‌رسانی</h4>
+    <p>شماره دانشجویی: {{ student_id }}</p>
+
+    <form method="POST" class="mt-3">
+        <div class="mb-3">
+            <label for="email" class="form-label">ایمیل خود را وارد کنید:</label>
+            <input type="email" name="email" id="email" class="form-control" 
+                   placeholder="example@domain.com" value="{{ email_value or '' }}" required>
+        </div>
+        <button type="submit" class="btn btn-primary">💾 ثبت ایمیل</button>
+        <a href="{{ url_for('dashboard') }}" class="btn btn-secondary ms-2">🔙 بازگشت به داشبورد</a>
+    </form>
 </div>
 {% endblock %}
