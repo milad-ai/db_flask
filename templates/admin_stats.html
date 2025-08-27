@@ -1,28 +1,31 @@
-{% extends 'base.html' %}
+
+{% extends "base.html" %}
 {% block content %}
-<h1 class="h5 mb-3">آمار ارسال‌ها (تفکیک رشته)</h1>
-<div class="card shadow-sm">
-  <div class="card-body table-responsive">
-    <table class="table align-middle">
-      <thead>
-        <tr>
-          <th>رشته</th>
-          <th>تمرین</th>
-          <th>تعداد ارسال</th>
-          <th>میانگین پاسخ صحیح</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for r in rows %}
+<div class="row justify-content-center">
+  <div class="col-md-8">
+    <div class="card p-4">
+      <h3 class="mb-3 text-center">آمار ادمین</h3>
+      <table class="table table-bordered table-striped">
+        <thead>
           <tr>
-            <td>{{ r.major }}</td>
-            <td>{{ r.hw }}</td>
-            <td>{{ r.submissions }}</td>
-            <td>{{ '%.2f'|format(r.avg_correct or 0) }}</td>
+            <th>رشته</th>
+            <th>تمرین</th>
+            <th>تعداد ارسال‌ها</th>
+            <th>میانگین پاسخ صحیح</th>
           </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+        </thead>
+        <tbody>
+          {% for row in rows %}
+            <tr>
+              <td>{{ row.major }}</td>
+              <td>{{ row.hw }}</td>
+              <td>{{ row.submissions }}</td>
+              <td>{{ "%.2f"|format(row.avg_correct) }}</td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
   </div>
 </div>
 {% endblock %}
