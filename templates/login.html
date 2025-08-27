@@ -1,21 +1,122 @@
+
 {% extends "base.html" %}
 {% block content %}
-<div class="row justify-content-center">
+<div class="row justify-content-center mt-5">
   <div class="col-md-5">
-    <div class="card p-4">
-      <h3 class="mb-3 text-center">ورود دانشجو</h3>
-      <form method="POST">
-        <div class="mb-3">
-          <label class="form-label">شماره دانشجویی</label>
-          <input type="text" name="student_id" class="form-control" required>
+    <div class="card shadow-lg border-0 rounded-4 p-5" style="background: linear-gradient(135deg, #667eea, #764ba2); color: white; position: relative;">
+      <h2 class="text-center mb-4 fw-bold">ورود دانشجو</h2>
+
+      <!-- میمون با CSS -->
+      <div class="text-center mb-4">
+        <div class="monkey-face">
+          <div class="eye left-eye"></div>
+          <div class="eye right-eye"></div>
+          <div class="mouth"></div>
         </div>
-        <div class="mb-3">
-          <label class="form-label">رمز عبور</label>
-          <input type="password" name="password" class="form-control" required>
+      </div>
+
+      <form method="POST" class="text-start">
+        <div class="mb-3 position-relative">
+          <label class="form-label fw-semibold">شماره دانشجویی</label>
+          <input type="text" name="student_id" class="form-control rounded-3 ps-5" placeholder="مثال: 14001234" required>
+          <span class="position-absolute top-50 translate-middle-y ps-3" style="color: #fff;">
+            <i class="bi bi-person-fill"></i>
+          </span>
         </div>
-        <button type="submit" class="btn btn-primary w-100">ورود</button>
+
+        <div class="mb-3 position-relative">
+          <label class="form-label fw-semibold">رمز عبور</label>
+          <input type="password" name="password" id="password-field" class="form-control rounded-3 ps-5" placeholder="رمز خود را وارد کنید" required>
+          <span class="position-absolute top-50 translate-middle-y ps-3" style="color: #fff;">
+            <i class="bi bi-lock-fill"></i>
+          </span>
+        </div>
+
+        <button type="submit" class="btn btn-light w-100 fw-bold shadow-sm mt-3">
+          <i class="bi bi-box-arrow-in-right me-2"></i> ورود
+        </button>
       </form>
+
+      
     </div>
   </div>
 </div>
+
+<!-- Bootstrap Icons CDN -->
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+
+<style>
+  body {
+    background: #f0f2f5;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+
+  .card input:focus {
+    box-shadow: 0 0 12px rgba(255,255,255,0.7);
+    border-color: #fff;
+  }
+
+  .form-control::placeholder {
+    color: rgba(255,255,255,0.7);
+  }
+
+  .position-relative input {
+    transition: 0.3s all;
+  }
+
+  .position-relative input:focus {
+    padding-left: 2.5rem;
+  }
+
+  .btn-light:hover {
+    transform: translateY(-2px);
+    transition: 0.2s;
+  }
+
+  /* میمون CSS */
+  .monkey-face {
+    width: 80px;
+    height: 80px;
+    background: #ffcc80;
+    border-radius: 50%;
+    margin: 0 auto;
+    position: relative;
+  }
+  .eye {
+    width: 18px;
+    height: 18px;
+    background: #000;
+    border-radius: 50%;
+    position: absolute;
+    top: 25px;
+    transition: transform 0.2s;
+  }
+  .left-eye { left: 20px; }
+  .right-eye { right: 20px; }
+  .mouth {
+    width: 30px;
+    height: 10px;
+    border-radius: 50%;
+    background: #000;
+    position: absolute;
+    bottom: 15px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
+</style>
+
+<script>
+  const passwordField = document.getElementById('password-field');
+  const eyes = document.querySelectorAll('.eye');
+
+  passwordField.addEventListener('focus', () => {
+    
+    eyes.forEach(e => e.style.transform = 'translateY(-5px) scale(1.2)');
+  });
+
+  passwordField.addEventListener('blur', () => {
+  
+    eyes.forEach(e => e.style.transform = 'translateY(0) scale(1)');
+  });
+</script>
 {% endblock %}
