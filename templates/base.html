@@ -1,3 +1,4 @@
+
 <!doctype html>
 <html lang="fa" dir="rtl">
   <head>
@@ -13,24 +14,8 @@
   </head>
   <body>
     <nav class="navbar navbar-expand-lg bg-body-tertiary mb-4">
-      <div class="container-fluid">
-        <a class="navbar-brand" href="{{ url_for('index') }}">سامانه تمرین پایگاه داده</a>
-
-        <!-- Navbar toggler (ضروری برای موبایل / حالت collapse) -->
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent"
-                aria-controls="navbarContent" aria-expanded="false" aria-label="تغییر ناوبری">
-          <span class="navbar-toggler-icon"></span>
-        </button>
-
-        <div class="collapse navbar-collapse" id="navbarContent">
-          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('submit') }}">ارسال تمرین</a></li>
-            <li class="nav-item"><a class="nav-link" href="{{ url_for('admin_stats') }}">آمار</a></li>
-          </ul>
-
-          <!-- دکمه‌های سمت راست (برای RTL ممکن است سمت چپ نمایش یابد) -->
-
-        </div>
+      <div class="container">
+        <a class="navbar-brand" href="{{ url_for('login') }}">DB-HW</a>
       </div>
     </nav>
 
