@@ -1,4 +1,5 @@
 
+
 {% extends "base.html" %}
 {% block content %}
 <div class="login-wrapper d-flex justify-content-center align-items-center vh-100">
@@ -47,7 +48,7 @@
       </svg>
     </div>
 
-    <!-- فرم ورود -->
+    <!-- فرم ورود دانشجو -->
     <form method="POST" class="text-start">
       <div class="mb-3">
         <label class="form-label fw-semibold">شماره دانشجویی</label>
@@ -70,4 +71,20 @@
 .login-wrapper { background: #f0f2f5; font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; }
 .mySVG { width: 200px; height: 200px; margin: 0 auto; }
 </style>
+
+<script>
+const passwordField = document.getElementById('password-field');
+const eyes = document.querySelectorAll('.eye');
+const armL = document.querySelector('.armL');
+const armR = document.querySelector('.armR');
+
+passwordField.addEventListener('focus', () => {
+  eyes.forEach(e => e.style.transform = 'translateY(-5px) scale(1.2)');
+  if(armL && armR) { armL.style.transform = 'rotate(-20deg)'; armR.style.transform = 'rotate(20deg)'; }
+});
+passwordField.addEventListener('blur', () => {
+  eyes.forEach(e => e.style.transform = 'translateY(0) scale(1)');
+  if(armL && armR) { armL.style.transform = 'rotate(0deg)'; armR.style.transform = 'rotate(0deg)'; }
+});
+</script>
 {% endblock %}
