@@ -15,9 +15,19 @@
             {% endfor %}
           </select>
         </div>
-        <div class="mb-3">
-          <label class="form-label">SQL (متن یا فایل)</label>
-          <textarea name="sql_text" class="form-control" rows="6" placeholder="# number 1 ..."></textarea>
+        
+          
+  <div class="mb-3">
+  <label class="form-label">SQL (متن یا فایل) </label>
+  <textarea 
+      name="sql_text" 
+      class="form-control" 
+      rows="8" 
+      style="direction:ltr; text-align:left; font-family:monospace;" 
+      placeholder="# number 1&#10;SELECT * FROM student;">
+  </textarea>
+</div>
+        
           <input type="file" name="sql_file" class="form-control mt-2">
         </div>
         <button type="submit" class="btn btn-success w-100">ارسال</button>
