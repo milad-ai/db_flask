@@ -261,3 +261,47 @@ def logout():
     session.clear()
     flash("با موفقیت خارج شدید.", "success")
     return redirect(url_for("login"))
+@app.route("/change_password", methods=["GET", "POST"])
+def change_password():
+    if "student_id" not in session:
+        flash("ابتدا وارد شوید.", "warning")
+        return redirect(url_for("login"))
+
+    student_id = session["student_id"]
+
+    if request.method == "POST":
+        old_pass = request.form.get("old_password", "").strip()
+        new_pass = request.form.get("new_password", "").strip()
+        confirm_pass = request.form.get("confirm_password", "").strip()
+
+        if not old_pass or not new_pass or not confirm_pass:
+            flash("لطفاً همه فیلدها را پر کنید.", "danger")
+            return redirect(url_for("change_password"))
+
+        if new_pass != confirm_pass:
+            flash("رمز جدید و تکرار آن مطابقت ندارند.", "danger")
+            return redirect(url_for("change_password"))
+
+        try:
+            with engine.begin() as conn:
+                # بررسی رمز قبلی
+                row = conn.execute(
+                    text("SELECT pass FROM stuid WHERE student_id=:sid"),
+                    {"sid": student_id}
+                ).fetchone()
+                if not row or row[0] != old_pass:
+                    flash("رمز قبلی اشتباه است.", "danger")
+                    return redirect(url_for("change_password"))
+
+                # بروزرسانی رمز
+                conn.execute(
+                    text("UPDATE stuid SET pass=:new_pass WHERE student_id=:sid"),
+                    {"new_pass": new_pass, "sid": student_id}
+                )
+            flash("رمز عبور با موفقیت تغییر کرد.", "success")
+            return redirect(url_for("dashboard"))
+        except Exception as e:
+            flash(f"خطا در تغییر رمز عبور: {e}", "danger")
+            return redirect(url_for("change_password"))
+
+    return render_template("change_password.html")
