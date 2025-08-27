@@ -229,7 +229,3 @@ def admin_stats():
         flash(f"خطا در بارگذاری آمار: {e}", "danger")
         rows = []
     return render_template("admin_stats.html", rows=rows)
-
-# ==================== اجرای اپلیکیشن ====================
-if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 5000)), debug=True)
