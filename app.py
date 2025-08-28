@@ -12,8 +12,8 @@ from sqlalchemy import create_engine, text
 DB_URI = os.environ.get("DB_URI", "sqlite:///./local_test.db")
 engine = create_engine(DB_URI, pool_pre_ping=True)
 # اضافه کردن در ابتدای فایل
-ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME", "admin")
-ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD", "admin123")
+ADMIN_USERNAME = os.environ.get("ADMIN_USERNAME")
+ADMIN_PASSWORD = os.environ.get("ADMIN_PASSWORD")
 
 try:
     with engine.begin() as conn:
