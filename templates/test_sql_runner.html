@@ -1,12 +1,7 @@
 
 {% extends "base.html" %}
 {% block content %}
-<div class="container mt-4" id="sql-container" style="direction: ltr; transition: background-color 0.3s, color 0.3s;">
-    <!-- دکمه حالت شب/روز -->
-    <div class="mb-3 text-end">
-        <button type="button" class="btn btn-secondary" id="theme-toggle">🌙 شب/روز</button>
-    </div>
-
+<div class="container mt-4" style="direction: ltr;">
     <h4 class="mb-3">🚀 اجرای SQL روی جدول test</h4>
 
     <form method="POST">
@@ -86,35 +81,5 @@
     overflow-x: auto;
     margin-top: 0.5rem;
 }
-
-/* حالت شب */
-.night-mode {
-    background-color: #121212 !important;
-    color: #e0e0e0 !important;
-}
-.night-mode .query-box {
-    background-color: #1e1e1e;
-    color: #e0e0e0;
-    border-color: #555;
-}
-.night-mode .modern-table tbody tr:nth-of-type(odd) td {
-    background-color: #1a1a1a;
-}
-.night-mode .modern-table tbody tr:hover td {
-    background-color: #333;
-}
-.night-mode .modern-table th {
-    background-color: #222;
-    color: #f0f0f0;
-}
 </style>
-
-<script>
-const toggleBtn = document.getElementById("theme-toggle");
-const container = document.getElementById("sql-container");
-
-toggleBtn.addEventListener("click", () => {
-    container.classList.toggle("night-mode");
-});
-</script>
 {% endblock %}
