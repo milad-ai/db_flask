@@ -1,55 +1,234 @@
 
 <!DOCTYPE html>
-<html dir="rtl">
+<html dir="rtl" lang="fa">
 <head>
     <meta charset="UTF-8">
-    <title>داشبورد ادمین</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>داشبورد ادمین - سیستم مدیریت</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fc;
+            font-family: 'Vazir', 'Tanha', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        .sidebar {
+            background: linear-gradient(180deg, #4e73df 0%, #224abe 100%);
+            min-height: 100vh;
+            color: white;
+        }
+        .sidebar .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            padding: 1rem 1.5rem;
+            margin: 0.2rem 0;
+            border-radius: 0;
+            transition: all 0.3s;
+        }
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+            border-left: 4px solid white;
+        }
+        .sidebar .nav-link i {
+            width: 20px;
+        }
+        .main-content {
+            padding: 20px;
+        }
+        .dashboard-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+            border: none;
+            height: 100%;
+        }
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+        }
+        .card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        .welcome-section {
+            background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+    </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
-        <div class="container">
-            <a class="navbar-brand" href="#">پنل ادمین</a>
-            <div class="navbar-nav ms-auto">
-                <a class="nav-link" href="{{ url_for('admin_query') }}">اجرای کوئری</a>
-                <a class="nav-link" href="{{ url_for('admin_submissions') }}">مشاهده ارسال‌ها</a>
-                <a class="nav-link" href="{{ url_for('admin_stats') }}">آمار</a>
-                <a class="nav-link" href="{{ url_for('admin_logout') }}">خروج</a>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- نوار کناری -->
+            <div class="col-md-3 col-lg-2 sidebar px-0">
+                <div class="text-center py-4">
+                    <h4 class="mb-0">
+                        <i class="bi bi-shield-lock me-2"></i>
+                        پنل ادمین
+                    </h4>
+                </div>
+                <hr class="my-2">
+                <nav class="nav flex-column">
+                    <a class="nav-link active" href="{{ url_for('admin_dashboard') }}">
+                        <i class="bi bi-speedometer2 me-2"></i>
+                        داشبورد
+                    </a>
+                    <a class="nav-link" href="{{ url_for('admin_query') }}">
+                        <i class="bi bi-database me-2"></i>
+                        اجرای کوئری
+                    </a>
+                    <a class="nav-link" href="{{ url_for('admin_submissions') }}">
+                        <i class="bi bi-list-check me-2"></i>
+                        ارسال‌ها
+                    </a>
+                    <a class="nav-link" href="{{ url_for('admin_stats') }}">
+                        <i class="bi bi-bar-chart me-2"></i>
+                        آمار سیستم
+                    </a>
+                    <hr class="my-2">
+                    <a class="nav-link" href="{{ url_for('admin_logout') }}">
+                        <i class="bi bi-box-arrow-right me-2"></i>
+                        خروج از سیستم
+                    </a>
+                </nav>
             </div>
-        </div>
-    </nav>
 
-    <div class="container mt-4">
-        <h2>داشبورد مدیریت</h2>
-        <div class="row mt-4">
-            <div class="col-md-4">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <h5 class="card-title">اجرای کوئری SQL</h5>
-                        <p class="card-text">اجرای مستقیم کوئری روی دیتابیس</p>
-                        <a href="{{ url_for('admin_query') }}" class="btn btn-primary">ورود</a>
+            <!-- محتوای اصلی -->
+            <div class="col-md-9 col-lg-10 main-content">
+                <!-- بخش خوش‌آمدگویی -->
+                <div class="welcome-section">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h2 class="mb-3">
+                                <i class="bi bi-speedometer2 me-2"></i>
+                                داشبورد مدیریت
+                            </h2>
+                            <p class="mb-0">مدیریت سیستم ارسال تمرین‌های دانشجویان</p>
+                        </div>
+                        <div class="col-md-4 text-end">
+                            <i class="bi bi-shield-lock display-4 opacity-75"></i>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <h5 class="card-title">مشاهده ارسال‌ها</h5>
-                        <p class="card-text">مشاهده ارسال‌های دانشجویان بر اساس رشته و تمرین</p>
-                        <a href="{{ url_for('admin_submissions') }}" class="btn btn-primary">ورود</a>
+
+                <!-- کارت‌های عملکرد -->
+                <div class="row g-4">
+                    <div class="col-md-6 col-lg-3">
+                        <div class="dashboard-card text-center">
+                            <div class="card-icon text-primary">
+                                <i class="bi bi-database"></i>
+                            </div>
+                            <h5>اجرای کوئری</h5>
+                            <p class="text-muted">اجرای مستقیم دستورات SQL روی دیتابیس</p>
+                            <a href="{{ url_for('admin_query') }}" class="btn btn-primary w-100">
+                                <i class="bi bi-arrow-left me-1"></i>
+                                ورود
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-lg-3">
+                        <div class="dashboard-card text-center">
+                            <div class="card-icon text-success">
+                                <i class="bi bi-list-check"></i>
+                            </div>
+                            <h5>مدیریت ارسال‌ها</h5>
+                            <p class="text-muted">مشاهده و مدیریت ارسال‌های دانشجویان</p>
+                            <a href="{{ url_for('admin_submissions') }}" class="btn btn-success w-100">
+                                <i class="bi bi-arrow-left me-1"></i>
+                                ورود
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-lg-3">
+                        <div class="dashboard-card text-center">
+                            <div class="card-icon text-info">
+                                <i class="bi bi-bar-chart"></i>
+                            </div>
+                            <h5>آمار سیستم</h5>
+                            <p class="text-muted">مشاهده آمار و گزارش‌های عملکرد سیستم</p>
+                            <a href="{{ url_for('admin_stats') }}" class="btn btn-info w-100 text-white">
+                                <i class="bi bi-arrow-left me-1"></i>
+                                ورود
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6 col-lg-3">
+                        <div class="dashboard-card text-center">
+                            <div class="card-icon text-warning">
+                                <i class="bi bi-people"></i>
+                            </div>
+                            <h5>مدیریت کاربران</h5>
+                            <p class="text-muted">مدیریت حساب‌های کاربری دانشجویان</p>
+                            <a href="#" class="btn btn-warning w-100 text-white">
+                                <i class="bi bi-arrow-left me-1"></i>
+                                ورود
+                            </a>
+                        </div>
                     </div>
                 </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card text-center">
-                    <div class="card-body">
-                        <h5 class="card-title">آمار سیستم</h5>
-                        <p class="card-text">مشاهده آمار کلی ارسال‌ها</p>
-                        <a href="{{ url_for('admin_stats') }}" class="btn btn-primary">ورود</a>
+
+                <!-- اطلاعات سیستم -->
+                <div class="row mt-4">
+                    <div class="col-12">
+                        <div class="dashboard-card">
+                            <h5 class="mb-3">
+                                <i class="bi bi-info-circle me-2"></i>
+                                اطلاعات سیستم
+                            </h5>
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                                        <span class="text-muted">تاریخ امروز:</span>
+                                        <span class="fw-bold">{{ today_date }}</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                                        <span class="text-muted">زمان آخرین بروزرسانی:</span>
+                                        <span class="fw-bold">{{ current_time }}</span>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                                        <span class="text-muted">تعداد کاربران:</span>
+                                        <span class="badge bg-primary">۲۴۵ نفر</span>
+                                    </div>
+                                    <div class="d-flex justify-content-between align-items-center py-2 border-bottom">
+                                        <span class="text-muted">وضعیت سیستم:</span>
+                                        <span class="badge bg-success">فعال</span>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // اضافه کردن تاریخ و زمان جاری
+        document.addEventListener('DOMContentLoaded', function() {
+            const today = new Date().toLocaleDateString('fa-IR');
+            const time = new Date().toLocaleTimeString('fa-IR');
+            
+            const dateElement = document.querySelector('[data-date]');
+            const timeElement = document.querySelector('[data-time]');
+            
+            if (dateElement) dateElement.textContent = today;
+            if (timeElement) timeElement.textContent = time;
+        });
+    </script>
 </body>
 </html>
