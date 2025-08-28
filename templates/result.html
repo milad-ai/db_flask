@@ -1,3 +1,4 @@
+
 {% extends "base.html" %}
 {% block content %}
 <div class="row justify-content-center">
@@ -12,24 +13,24 @@
       
       <div class="card-body p-5">
         <!-- هدر اطلاعات دانشجو -->
-        <div class="student-info mb-4 p-3 rounded bg-light">
-          <div class="row">
-            <div class="col-md-4 border-end">
-              <div class="d-flex align-items-center">
-                <i class="fas fa-user-graduate text-primary me-2"></i>
-                <span>{{ name }}</span>
+        <div class="student-info mb-4 p-4 rounded bg-light">
+          <div class="row text-center">
+            <div class="col-md-12 mb-3">
+              <div class="d-flex align-items-center justify-content-center">
+                <i class="fas fa-user-graduate text-primary me-2 fa-lg"></i>
+                <span class="fw-bold fs-5">نام و نام خانوادگی: {{ name }}</span>
               </div>
             </div>
-            <div class="col-md-4 border-end">
-              <div class="d-flex align-items-center">
+            <div class="col-md-6 mb-3">
+              <div class="d-flex align-items-center justify-content-center">
                 <i class="fas fa-id-card text-primary me-2"></i>
-                <span>{{ student_id }}</span>
+                <span>شماره دانشجویی: {{ student_id }}</span>
               </div>
             </div>
-            <div class="col-md-4">
-              <div class="d-flex align-items-center">
+            <div class="col-md-6 mb-3">
+              <div class="d-flex align-items-center justify-content-center">
                 <i class="fas fa-book text-primary me-2"></i>
-                <span>{{ major }}</span>
+                <span>رشته: {{ major }}</span>
               </div>
             </div>
           </div>
