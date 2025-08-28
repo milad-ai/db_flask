@@ -2,36 +2,98 @@
 {% extends "base.html" %}
 {% block content %}
 <div class="container mt-4">
-    <h4 class="mb-3">اجرای SQL روی جدول test</h4>
+    <h4 class="mb-3">🚀 اجرای SQL روی جدول test</h4>
 
     <form method="POST">
         <div class="mb-3">
-            <textarea name="query" class="form-control" rows="3" placeholder="مثال: SELECT * FROM test;" required>{{ query }}</textarea>
+            <textarea name="query" class="form-control text-start" rows="4" placeholder="مثال: SELECT * FROM test;" required>{{ query }}</textarea>
         </div>
         <button type="submit" class="btn btn-primary">اجرای کویری</button>
         <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">بازگشت به داشبورد</a>
     </form>
 
     {% if output %}
-    <h5 class="mt-4">خروجی:</h5>
-    <table class="table table-bordered table-sm">
-        <thead>
-            <tr>
-                {% for col in output.columns %}
-                <th>{{ col }}</th>
+    <h5 class="mt-4">📊 خروجی:</h5>
+    <div class="table-responsive shadow-sm rounded">
+        <table class="table table-sm table-hover modern-table">
+            <thead class="table-dark">
+                <tr>
+                    {% for col in output.columns %}
+                    <th>{{ col }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in output.rows %}
+                <tr>
+                    {% for val in row %}
+                    <td class="{% if val is number %}number-cell{% else %}text-cell{% endif %}">{{ val }}</td>
+                    {% endfor %}
+                </tr>
                 {% endfor %}
-            </tr>
-        </thead>
-        <tbody>
-            {% for row in output.rows %}
-            <tr>
-                {% for val in row %}
-                <td>{{ val }}</td>
-                {% endfor %}
-            </tr>
-            {% endfor %}
-        </tbody>
-    </table>
+            </tbody>
+        </table>
+    </div>
     {% endif %}
 </div>
+
+<style>
+textarea.text-start {
+    direction: ltr;
+    text-align: left;
+    font-family: monospace;
+    font-size: 0.95rem;
+    background-color: #f8f9fa;
+    border: 1px solid #ced4da;
+    border-radius: 0.35rem;
+}
+
+/* جدول مدرن */
+.modern-table th, .modern-table td {
+    padding: 0.6rem 0.8rem;
+    vertical-align: middle;
+    border: 1px solid #dee2e6;
+    transition: background-color 0.2s;
+    font-family: monospace;
+    font-size: 0.9rem;
+}
+
+/* سلول‌های عددی */
+.number-cell {
+    background-color: #d0e7ff;
+    text-align: right;
+    font-weight: 500;
+    border-radius: 4px;
+}
+
+/* سلول‌های متنی */
+.text-cell {
+    background-color: #ffffff;
+    text-align: left;
+    border-radius: 4px;
+}
+
+/* ردیف‌ها و هاور */
+.modern-table tbody tr:nth-of-type(odd) td {
+    background-color: #f7f9fc;
+}
+.modern-table tbody tr:hover td {
+    background-color: #cce5ff;
+}
+
+/* اسکرول جدول */
+.table-responsive {
+    max-height: 450px;
+    overflow-y: auto;
+    margin-top: 0.5rem;
+}
+
+/* سایه و گرد شدن برای کل جدول */
+.table-responsive table {
+    border-collapse: separate;
+    border-spacing: 0;
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+</style>
 {% endblock %}
