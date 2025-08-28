@@ -1,25 +1,237 @@
-
 {% extends "base.html" %}
 {% block content %}
 <div class="row justify-content-center">
-  <div class="col-md-8">
-    <div class="card p-4">
-      <h3 class="mb-3 text-center">نتیجه تمرین</h3>
-      <p>دانشجو: {{ name }} | شماره دانشجویی: {{ student_id }} | رشته: {{ major }}</p>
-      <p>تمرین: {{ hw }}</p>
-      <p>تعداد سوال‌ها: {{ total }}</p>
-      <p>تعداد پاسخ صحیح: {{ correct }}</p>
-      {% if incorrect %}
-        <p>سوال‌های نادرست: {{ incorrect|join(", ") }}</p>
-      {% else %}
-        <p>🎉 تمام سوال‌ها صحیح است!</p>
-      {% endif %}
-      <p>تعداد ارسال‌های انجام شده: {{ done }}/10</p>
-      <p>تعداد ارسال‌های باقی‌مانده: {{ remaining }}</p>
-      <p>زمان ثبت: {{ time_fa }}</p>
-      <a href="{{ url_for('submit') }}" class="btn btn-primary w-100 mt-3">ارسال تمرین جدید</a>
-      <a href="{{ url_for('dashboard') }}" class="btn btn-secondary mt-3">بازگشت به داشبورد</a>
+  <div class="col-md-10 col-lg-8">
+    <div class="card result-card shadow-lg border-0">
+      <div class="card-header bg-primary text-white text-center py-4">
+        <h3 class="mb-0">
+          <i class="fas fa-trophy me-2"></i>
+          نتیجه ارسال تمرین
+        </h3>
+      </div>
+      
+      <div class="card-body p-5">
+        <!-- هدر اطلاعات دانشجو -->
+        <div class="student-info mb-4 p-3 rounded bg-light">
+          <div class="row">
+            <div class="col-md-4 border-end">
+              <div class="d-flex align-items-center">
+                <i class="fas fa-user-graduate text-primary me-2"></i>
+                <span>{{ name }}</span>
+              </div>
+            </div>
+            <div class="col-md-4 border-end">
+              <div class="d-flex align-items-center">
+                <i class="fas fa-id-card text-primary me-2"></i>
+                <span>{{ student_id }}</span>
+              </div>
+            </div>
+            <div class="col-md-4">
+              <div class="d-flex align-items-center">
+                <i class="fas fa-book text-primary me-2"></i>
+                <span>{{ major }}</span>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- اطلاعات تمرین -->
+        <div class="row mb-4">
+          <div class="col-md-6 mb-3">
+            <div class="info-box p-3 rounded h-100">
+              <div class="d-flex align-items-center mb-2">
+                <i class="fas fa-tasks text-info me-2"></i>
+                <strong>تمرین شماره</strong>
+              </div>
+              <div class="fw-bold fs-5 text-center">{{ hw }}</div>
+            </div>
+          </div>
+          <div class="col-md-6 mb-3">
+            <div class="info-box p-3 rounded h-100">
+              <div class="d-flex align-items-center mb-2">
+                <i class="fas fa-clock text-info me-2"></i>
+                <strong>زمان ثبت</strong>
+              </div>
+              <div class="fw-bold text-center">{{ time_fa }}</div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- آمار نتایج -->
+        <div class="result-stats mb-4">
+          <div class="row">
+            <div class="col-md-4 mb-3">
+              <div class="stat-card text-center p-3 rounded">
+                <div class="stat-icon mb-2">
+                  <i class="fas fa-list-ol fa-2x text-primary"></i>
+                </div>
+                <div class="stat-value fw-bold fs-4">{{ total }}</div>
+                <div class="stat-label">تعداد سوال‌ها</div>
+              </div>
+            </div>
+            
+            <div class="col-md-4 mb-3">
+              <div class="stat-card text-center p-3 rounded">
+                <div class="stat-icon mb-2">
+                  <i class="fas fa-check-circle fa-2x text-success"></i>
+                </div>
+                <div class="stat-value fw-bold fs-4">{{ correct }}</div>
+                <div class="stat-label">پاسخ صحیح</div>
+              </div>
+            </div>
+            
+            <div class="col-md-4 mb-3">
+              <div class="stat-card text-center p-3 rounded">
+                <div class="stat-icon mb-2">
+                  <i class="fas fa-times-circle fa-2x text-danger"></i>
+                </div>
+                <div class="stat-value fw-bold fs-4">{{ total - correct }}</div>
+                <div class="stat-label">پاسخ نادرست</div>
+              </div>
+            </div>
+          </div>
+        </div>
+        
+        <!-- نوار پیشرفت -->
+        <div class="progress-container mb-4">
+          <div class="d-flex justify-content-between mb-2">
+            <span>پیشرفت شما</span>
+            <span>{{ done }}/10 ارسال</span>
+          </div>
+          <div class="progress" style="height: 20px;">
+            <div class="progress-bar bg-success progress-bar-striped progress-bar-animated" 
+                 role="progressbar" 
+                 style="width: {{ (done / 10) * 100 }}%;" 
+                 aria-valuenow="{{ done }}" 
+                 aria-valuemin="0" 
+                 aria-valuemax="10">
+              {{ done }} ارسال
+            </div>
+          </div>
+          <div class="mt-2 text-muted">
+            <i class="fas fa-info-circle me-1"></i>
+            {{ remaining }} ارسال باقی‌مانده
+          </div>
+        </div>
+        
+        <!-- سوالات نادرست -->
+        {% if incorrect %}
+        <div class="incorrect-questions mb-4">
+          <div class="alert alert-warning">
+            <div class="d-flex align-items-center">
+              <i class="fas fa-exclamation-triangle me-2"></i>
+              <strong>سوال‌های نیازمند بازبینی</strong>
+            </div>
+            <hr>
+            <div class="question-badges">
+              {% for q in incorrect %}
+                <span class="badge bg-danger me-1 mb-1">سوال {{ q }}</span>
+              {% endfor %}
+            </div>
+          </div>
+        </div>
+        {% else %}
+        <div class="success-message mb-4">
+          <div class="alert alert-success text-center">
+            <i class="fas fa-check-circle fa-2x mb-2"></i>
+            <h5>تبریک می‌گوییم!</h5>
+            <p class="mb-0">شما به تمام سوالات به درستی پاسخ داده‌اید.</p>
+          </div>
+        </div>
+        {% endif %}
+        
+        <!-- دکمه‌های اقدام -->
+        <div class="action-buttons">
+          <div class="row">
+            <div class="col-md-6 mb-2">
+              <a href="{{ url_for('submit') }}" class="btn btn-primary btn-lg w-100 py-3">
+                <i class="fas fa-paper-plane me-2"></i>
+                ارسال تمرین جدید
+              </a>
+            </div>
+            <div class="col-md-6 mb-2">
+              <a href="{{ url_for('dashboard') }}" class="btn btn-outline-secondary btn-lg w-100 py-3">
+                <i class="fas fa-home me-2"></i>
+                بازگشت به داشبورد
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
   </div>
 </div>
+{% endblock %}
+
+{% block styles %}
+<style>
+.result-card {
+  border-radius: 15px;
+  overflow: hidden;
+  animation: fadeIn 0.6s ease;
+}
+
+.student-info {
+  background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+  border-left: 4px solid #4e73df;
+}
+
+.info-box {
+  border: 1px solid #e3e6f0;
+  transition: all 0.3s;
+}
+
+.info-box:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+}
+
+.stat-card {
+  background-color: #f8f9fc;
+  border: 1px solid #e3e6f0;
+  transition: all 0.3s;
+}
+
+.stat-card:hover {
+  background-color: #eaecf4;
+  transform: translateY(-3px);
+}
+
+.progress-container {
+  background-color: #f8f9fc;
+  padding: 20px;
+  border-radius: 10px;
+  border: 1px solid #e3e6f0;
+}
+
+.question-badges {
+  direction: ltr;
+  text-align: right;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+</style>
+{% endblock %}
+
+{% block scripts %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+  // انیمیشن برای المان‌های آماری
+  const statCards = document.querySelectorAll('.stat-card');
+  statCards.forEach((card, index) => {
+    card.style.animationDelay = `${index * 0.1}s`;
+    card.classList.add('animate__animated', 'animate__fadeInUp');
+  });
+  
+  // نمایش پیام موفقیت با انیمیشن
+  const successMessage = document.querySelector('.success-message');
+  if (successMessage) {
+    successMessage.classList.add('animate__animated', 'animate__pulse');
+  }
+});
+</script>
 {% endblock %}
