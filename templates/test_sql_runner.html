@@ -1,699 +1,112 @@
 
 {% extends "base.html" %}
 {% block content %}
-<div class="sql-runner-container" style="direction: ltr;">
-    <!-- Header با انیمیشن -->
-    <div class="header-section">
-        <div class="title-wrapper">
-            <div class="rocket-icon">🚀</div>
-            <h2 class="main-title">SQL Query Runner</h2>
-            <div class="subtitle">اجرای کویری‌های SQL روی جدول test</div>
+<div class="container mt-4" style="direction: ltr;">
+    <!-- Header ساده با انیمیشن موشک -->
+    <div class="header-section text-center mb-4">
+        <div class="rocket-icon">🚀</div>
+        <h4 class="mb-3">اجرای SQL روی جدول test</h4>
+    </div>
+
+    <form method="POST">
+        <div class="mb-3">
+            <textarea name="query" class="form-control query-box" rows="4" placeholder="مثال: SELECT * FROM test;" required>{{ query or '' }}</textarea>
         </div>
-        <div class="particles"></div>
-    </div>
+        <button type="submit" class="btn btn-primary">اجرای کویری</button>
+        <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">بازگشت به داشبورد</a>
+    </form>
 
-    <!-- Query Input Section -->
-    <div class="query-section">
-        <form method="POST" class="query-form">
-            <div class="input-wrapper">
-                <label class="query-label">
-                    <span class="label-icon">💻</span>
-                    <span class="label-text">کویری SQL خود را وارد کنید:</span>
-                </label>
-                <div class="textarea-container">
-                    <textarea name="query" 
-                              class="sql-textarea" 
-                              rows="6" 
-                              placeholder="-- مثال: SELECT * FROM test WHERE id > 10;&#10;-- کویری خود را اینجا بنویسید..." 
-                              required>{{ query or '' }}</textarea>
-                    <div class="syntax-highlight-overlay"></div>
-                </div>
-            </div>
-            
-            <div class="button-group">
-                <button type="submit" class="btn-execute">
-                    <span class="btn-icon">⚡</span>
-                    <span class="btn-text">اجرای کویری</span>
-                    <div class="btn-ripple"></div>
-                </button>
-                <a href="{{ url_for('dashboard') }}" class="btn-back">
-                    <span class="btn-icon">🔙</span>
-                    <span class="btn-text">بازگشت</span>
-                </a>
-            </div>
-        </form>
-    </div>
-
-    <!-- Results Section -->
     {% if output or error %}
-    <div class="results-section">
-        <div class="results-header">
-            <h3 class="results-title">
-                <span class="results-icon">📊</span>
-                نتایج اجرا
-            </h3>
-        </div>
-        
-        {% if error %}
-        <div class="error-container">
-            <div class="error-icon">❌</div>
-            <div class="error-content">
-                <h4>خطا در اجرای کویری</h4>
-                <p>{{ error }}</p>
-            </div>
-        </div>
-        {% else %}
-        <div class="success-container">
-            <div class="table-stats">
-                <div class="stat-item">
-                    <span class="stat-number">{{ output.rows|length }}</span>
-                    <span class="stat-label">ردیف</span>
-                </div>
-                <div class="stat-item">
-                    <span class="stat-number">{{ output.columns|length }}</span>
-                    <span class="stat-label">ستون</span>
-                </div>
-            </div>
-            
-            <div class="table-container">
-                <div class="table-wrapper">
-                    <table class="results-table">
-                        <thead>
-                            <tr>
-                                {% for col in output.columns %}
-                                <th>
-                                    <div class="column-header">
-                                        <span class="column-icon">🔤</span>
-                                        <span class="column-name">{{ col }}</span>
-                                    </div>
-                                </th>
-                                {% endfor %}
-                            </tr>
-                        </thead>
-                        <tbody>
-                            {% for row in output.rows %}
-                            <tr class="table-row">
-                                {% for val in row %}
-                                <td>
-                                    <div class="cell-content">{{ val }}</div>
-                                </td>
-                                {% endfor %}
-                            </tr>
-                            {% endfor %}
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-        {% endif %}
+    <h5 class="mt-4 text-end">📊 خروجی:</h5>
+    {% if error %}
+    <div class="alert alert-danger" role="alert">
+        {{ error }}
     </div>
+    {% else %}
+    <div class="table-responsive shadow-sm rounded overflow-auto" style="max-height:450px; max-width:100%;">
+        <table class="table table-sm table-hover modern-table">
+            <thead class="table-dark">
+                <tr>
+                    {% for col in output.columns %}
+                    <th class="text-start">{{ col }}</th>
+                    {% endfor %}
+                </tr>
+            </thead>
+            <tbody>
+                {% for row in output.rows %}
+                <tr>
+                    {% for val in row %}
+                    <td class="text-start">{{ val }}</td>
+                    {% endfor %}
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endif %}
     {% endif %}
 </div>
 
 <style>
-@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700&display=swap');
-
-* {
-    box-sizing: border-box;
-}
-
-.sql-runner-container {
-    min-height: 100vh;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    padding: 2rem;
-    position: relative;
-    overflow-x: hidden;
-}
-
-.sql-runner-container::before {
-    content: '';
-    position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    background: 
-        radial-gradient(circle at 20% 80%, rgba(255,255,255,0.1) 0%, transparent 50%),
-        radial-gradient(circle at 80% 20%, rgba(255,255,255,0.1) 0%, transparent 50%);
-    pointer-events: none;
-}
-
-/* Header Section */
+/* فقط انیمیشن موشک */
 .header-section {
     position: relative;
-    text-align: center;
-    margin-bottom: 3rem;
-    z-index: 2;
-}
-
-.title-wrapper {
-    background: rgba(255,255,255,0.1);
-    backdrop-filter: blur(20px);
-    border-radius: 20px;
-    padding: 2rem;
-    border: 1px solid rgba(255,255,255,0.2);
-    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-    animation: fadeInUp 0.8s ease-out;
 }
 
 .rocket-icon {
-    font-size: 3rem;
+    font-size: 2rem;
     animation: rocket-float 3s ease-in-out infinite;
     display: inline-block;
-    margin-bottom: 1rem;
+    margin-bottom: 0.5rem;
 }
 
-.main-title {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 2.5rem;
-    font-weight: 700;
-    color: white;
-    margin: 0;
-    text-shadow: 0 2px 10px rgba(0,0,0,0.3);
-    letter-spacing: -1px;
+/* انیمیشن موشک */
+@keyframes rocket-float {
+    0%, 100% { 
+        transform: translateY(0px) rotate(-2deg); 
+    }
+    50% { 
+        transform: translateY(-10px) rotate(2deg); 
+    }
 }
 
-.subtitle {
-    font-family: 'JetBrains Mono', monospace;
-    color: rgba(255,255,255,0.8);
-    margin-top: 0.5rem;
-    font-size: 1.1rem;
-}
-
-/* Particles Animation */
-.particles {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    pointer-events: none;
-}
-
-.particles::before,
-.particles::after {
-    content: '';
-    position: absolute;
-    width: 4px;
-    height: 4px;
-    background: rgba(255,255,255,0.4);
-    border-radius: 50%;
-    animation: particle-float 6s ease-in-out infinite;
-}
-
-.particles::before {
-    top: 20%;
-    left: 10%;
-    animation-delay: -2s;
-}
-
-.particles::after {
-    top: 80%;
-    right: 15%;
-    animation-delay: -4s;
-}
-
-/* Query Section */
-.query-section {
-    max-width: 1000px;
-    margin: 0 auto 3rem auto;
-    z-index: 2;
-    position: relative;
-}
-
-.query-form {
-    background: rgba(255,255,255,0.1);
-    backdrop-filter: blur(20px);
-    border-radius: 20px;
-    padding: 2rem;
-    border: 1px solid rgba(255,255,255,0.2);
-    box-shadow: 0 8px 32px rgba(0,0,0,0.1);
-    animation: fadeInUp 0.8s ease-out 0.2s both;
-}
-
-.input-wrapper {
-    margin-bottom: 2rem;
-}
-
-.query-label {
-    display: flex;
-    align-items: center;
-    margin-bottom: 1rem;
-    font-family: 'JetBrains Mono', monospace;
-    color: white;
-    font-weight: 500;
-    font-size: 1.1rem;
-}
-
-.label-icon {
-    margin-left: 0.5rem;
-    font-size: 1.2rem;
-}
-
-.textarea-container {
-    position: relative;
-}
-
-.sql-textarea {
-    width: 100%;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 1rem;
-    line-height: 1.6;
-    padding: 1.5rem;
-    border: 2px solid rgba(255,255,255,0.2);
-    border-radius: 15px;
-    background: rgba(0,0,0,0.3);
-    color: #e0e0e0;
-    resize: vertical;
-    min-height: 150px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    backdrop-filter: blur(10px);
+.query-box {
     direction: ltr;
+    text-align: left;
+    font-family: monospace;
+    font-size: 0.95rem;
+    background-color: #f8f9fa;
+    border: 1px solid #ced4da;
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    transition: 0.2s all;
+}
+
+.query-box:focus {
+    border-color: #0d6efd;
+    box-shadow: 0 0 0 0.25rem rgba(13, 110, 253, 0.25);
+}
+
+.modern-table th, .modern-table td {
+    padding: 0.6rem 0.8rem;
+    vertical-align: middle;
+    border: 1px solid #dee2e6;
+    font-family: monospace;
+    font-size: 0.9rem;
     text-align: left;
 }
 
-.sql-textarea::placeholder {
-    color: rgba(255,255,255,0.4);
-    font-style: italic;
+.modern-table tbody tr:nth-of-type(odd) td {
+    background-color: #f8f9fa;
 }
 
-.sql-textarea:focus {
-    outline: none;
-    border-color: #64ffda;
-    box-shadow: 
-        0 0 0 3px rgba(100, 255, 218, 0.3),
-        0 0 20px rgba(100, 255, 218, 0.2);
-    transform: translateY(-2px);
+.modern-table tbody tr:hover td {
+    background-color: #e7f1ff;
 }
 
-/* Button Group */
-.button-group {
-    display: flex;
-    gap: 1rem;
-    flex-wrap: wrap;
-}
-
-.btn-execute, .btn-back {
-    position: relative;
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 1rem 2rem;
-    border: none;
-    border-radius: 12px;
-    font-family: 'JetBrains Mono', monospace;
-    font-weight: 600;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    text-decoration: none;
-    overflow: hidden;
-    z-index: 1;
-}
-
-.btn-execute {
-    background: linear-gradient(135deg, #00c9ff 0%, #92fe9d 100%);
-    color: #1a1a1a;
-    box-shadow: 0 8px 25px rgba(0, 201, 255, 0.3);
-}
-
-.btn-execute:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 35px rgba(0, 201, 255, 0.4);
-}
-
-.btn-back {
-    background: linear-gradient(135deg, #fc466b 0%, #3f5efb 100%);
-    color: white;
-    box-shadow: 0 8px 25px rgba(252, 70, 107, 0.3);
-}
-
-.btn-back:hover {
-    transform: translateY(-3px);
-    box-shadow: 0 12px 35px rgba(252, 70, 107, 0.4);
-    color: white;
-    text-decoration: none;
-}
-
-.btn-ripple {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    width: 0;
-    height: 0;
-    border-radius: 50%;
-    background: rgba(255, 255, 255, 0.3);
-    transform: translate(-50%, -50%);
-    transition: width 0.6s, height 0.6s;
-}
-
-.btn-execute:active .btn-ripple {
-    width: 300px;
-    height: 300px;
-}
-
-.btn-icon {
-    font-size: 1.1rem;
-}
-
-/* Results Section */
-.results-section {
-    max-width: 1200px;
-    margin: 0 auto;
-    z-index: 2;
-    position: relative;
-    animation: fadeInUp 0.8s ease-out 0.4s both;
-}
-
-.results-header {
-    text-align: center;
-    margin-bottom: 2rem;
-}
-
-.results-title {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 0.5rem;
-    font-family: 'JetBrains Mono', monospace;
-    color: white;
-    font-size: 2rem;
-    margin: 0;
-    text-shadow: 0 2px 10px rgba(0,0,0,0.3);
-}
-
-.results-icon {
-    font-size: 2.5rem;
-    animation: pulse 2s infinite;
-}
-
-/* Error Container */
-.error-container {
-    background: rgba(244, 67, 54, 0.1);
-    backdrop-filter: blur(20px);
-    border: 2px solid rgba(244, 67, 54, 0.3);
-    border-radius: 20px;
-    padding: 2rem;
-    display: flex;
-    align-items: center;
-    gap: 1rem;
-    color: white;
-}
-
-.error-icon {
-    font-size: 3rem;
-    animation: shake 0.5s ease-in-out;
-}
-
-.error-content h4 {
-    margin: 0 0 0.5rem 0;
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 1.3rem;
-}
-
-.error-content p {
-    margin: 0;
-    font-family: 'JetBrains Mono', monospace;
-    opacity: 0.9;
-}
-
-/* Success Container */
-.success-container {
-    background: rgba(255,255,255,0.1);
-    backdrop-filter: blur(20px);
-    border-radius: 20px;
-    border: 1px solid rgba(255,255,255,0.2);
-    overflow: hidden;
-}
-
-.table-stats {
-    display: flex;
-    gap: 2rem;
-    padding: 1.5rem 2rem;
-    background: rgba(76, 175, 80, 0.1);
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-}
-
-.stat-item {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    text-align: center;
-}
-
-.stat-number {
-    font-family: 'JetBrains Mono', monospace;
-    font-size: 2rem;
-    font-weight: 700;
-    color: #64ffda;
-    line-height: 1;
-}
-
-.stat-label {
-    font-family: 'JetBrains Mono', monospace;
-    color: rgba(255,255,255,0.7);
-    font-size: 0.9rem;
-    margin-top: 0.25rem;
-}
-
-.table-container {
-    padding: 0;
-}
-
-.table-wrapper {
-    max-height: 500px;
-    overflow: auto;
-    scrollbar-width: thin;
-    scrollbar-color: rgba(100, 255, 218, 0.5) transparent;
-}
-
-.table-wrapper::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
-}
-
-.table-wrapper::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-.table-wrapper::-webkit-scrollbar-thumb {
-    background: rgba(100, 255, 218, 0.5);
-    border-radius: 4px;
-}
-
-.results-table {
-    width: 100%;
-    border-collapse: collapse;
-    font-family: 'JetBrains Mono', monospace;
-}
-
-.results-table thead th {
-    position: sticky;
-    top: 0;
-    background: linear-gradient(135deg, #1e3c72 0%, #2a5298 100%);
-    z-index: 10;
-}
-
-.column-header {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    padding: 1rem;
-    color: white;
-    font-weight: 600;
-}
-
-.column-icon {
-    opacity: 0.7;
-}
-
-.column-name {
-    white-space: nowrap;
-}
-
-.table-row {
-    transition: all 0.3s ease;
-    border-bottom: 1px solid rgba(255,255,255,0.1);
-}
-
-.table-row:nth-child(even) {
-    background: rgba(255,255,255,0.03);
-}
-
-.table-row:hover {
-    background: rgba(100, 255, 218, 0.1);
-    transform: scale(1.01);
-    box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-}
-
-.cell-content {
-    padding: 1rem;
-    color: rgba(255,255,255,0.9);
-    white-space: nowrap;
-    max-width: 200px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-}
-
-/* Animations */
-@keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(30px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes rocket-float {
-    0%, 100% { transform: translateY(0px) rotate(0deg); }
-    50% { transform: translateY(-10px) rotate(5deg); }
-}
-
-@keyframes particle-float {
-    0%, 100% { 
-        transform: translateY(0px) translateX(0px) scale(1);
-        opacity: 0.4;
-    }
-    33% { 
-        transform: translateY(-20px) translateX(10px) scale(1.2);
-        opacity: 0.8;
-    }
-    66% { 
-        transform: translateY(-10px) translateX(-5px) scale(0.8);
-        opacity: 0.6;
-    }
-}
-
-@keyframes pulse {
-    0%, 100% { transform: scale(1); }
-    50% { transform: scale(1.1); }
-}
-
-@keyframes shake {
-    0%, 100% { transform: translateX(0); }
-    25% { transform: translateX(-5px); }
-    75% { transform: translateX(5px); }
-}
-
-/* Responsive Design */
-@media (max-width: 768px) {
-    .sql-runner-container {
-        padding: 1rem;
-    }
-    
-    .main-title {
-        font-size: 2rem;
-    }
-    
-    .button-group {
-        flex-direction: column;
-    }
-    
-    .btn-execute, .btn-back {
-        justify-content: center;
-    }
-    
-    .table-stats {
-        flex-direction: column;
-        gap: 1rem;
-        text-align: center;
-    }
-    
-    .cell-content {
-        max-width: 150px;
-    }
-}
-
-@media (max-width: 480px) {
-    .title-wrapper {
-        padding: 1.5rem;
-    }
-    
-    .query-form {
-        padding: 1.5rem;
-    }
-    
-    .main-title {
-        font-size: 1.5rem;
-    }
-    
-    .cell-content {
-        max-width: 100px;
-        font-size: 0.85rem;
-    }
+.table-responsive {
+    overflow-x: auto;
+    margin-top: 0.5rem;
 }
 </style>
-
-<script>
-// اضافه کردن انیمیشن‌های تعاملی
-document.addEventListener('DOMContentLoaded', function() {
-    // انیمیشن ذرات پس‌زمینه
-    function createFloatingParticles() {
-        const container = document.querySelector('.sql-runner-container');
-        
-        for (let i = 0; i < 15; i++) {
-            const particle = document.createElement('div');
-            particle.style.cssText = `
-                position: absolute;
-                width: ${Math.random() * 4 + 2}px;
-                height: ${Math.random() * 4 + 2}px;
-                background: rgba(255, 255, 255, ${Math.random() * 0.5 + 0.1});
-                border-radius: 50%;
-                top: ${Math.random() * 100}%;
-                left: ${Math.random() * 100}%;
-                animation: particle-float ${Math.random() * 10 + 5}s ease-in-out infinite;
-                animation-delay: ${Math.random() * 5}s;
-                pointer-events: none;
-                z-index: 1;
-            `;
-            container.appendChild(particle);
-        }
-    }
-    
-    createFloatingParticles();
-    
-    // انیمیشن هایلایت SQL
-    const textarea = document.querySelector('.sql-textarea');
-    if (textarea) {
-        textarea.addEventListener('input', function() {
-            // اضافه کردن افکت تایپینگ
-            this.style.boxShadow = '0 0 0 3px rgba(100, 255, 218, 0.3), 0 0 20px rgba(100, 255, 218, 0.2)';
-            
-            setTimeout(() => {
-                this.style.boxShadow = '';
-            }, 300);
-        });
-    }
-    
-    // انیمیشن ردیف‌های جدول
-    const tableRows = document.querySelectorAll('.table-row');
-    tableRows.forEach((row, index) => {
-        row.style.animationDelay = `${index * 0.1}s`;
-        row.classList.add('fade-in-row');
-    });
-});
-
-// اضافه کردن استایل برای انیمیشن ردیف‌ها
-const style = document.createElement('style');
-style.textContent = `
-    .fade-in-row {
-        animation: fadeInLeft 0.6s ease-out both;
-    }
-    
-    @keyframes fadeInLeft {
-        from {
-            opacity: 0;
-            transform: translateX(-30px);
-        }
-        to {
-            opacity: 1;
-            transform: translateX(0);
-        }
-    }
-`;
-document.head.appendChild(style);
-</script>
 {% endblock %}
