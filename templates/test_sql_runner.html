@@ -1,20 +1,30 @@
 
 {% extends "base.html" %}
 {% block content %}
-<div class="container mt-4" style="direction: ltr;">
+<div class="container mt-4" id="sql-container" style="direction: ltr; transition: background-color 0.3s, color 0.3s;">
+    <!-- دکمه حالت شب/روز -->
+    <div class="mb-3 text-end">
+        <button type="button" class="btn btn-secondary" id="theme-toggle">🌙 شب/روز</button>
+    </div>
+
     <h4 class="mb-3">🚀 اجرای SQL روی جدول test</h4>
 
     <form method="POST">
         <div class="mb-3">
             <textarea name="query" class="form-control query-box" rows="4" placeholder="مثال: SELECT * FROM test;" required>{{ query or '' }}</textarea>
         </div>
-        <button type="submit" class="btn btn-primary">اجرای کوئری</button>
+        <button type="submit" class="btn btn-primary">اجرای کویری</button>
         <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">بازگشت به داشبورد</a>
     </form>
 
-    {% if output %}
-    <h5 class="mt-4">📊 خروجی:</h5>
-    <div class="table-responsive shadow-sm rounded">
+    {% if output or error %}
+    <h5 class="mt-4 text-end">📊 خروجی:</h5>
+    {% if error %}
+    <div class="alert alert-danger" role="alert">
+        {{ error }}
+    </div>
+    {% else %}
+    <div class="table-responsive shadow-sm rounded overflow-auto" style="max-height:450px; max-width:100%;">
         <table class="table table-sm table-hover modern-table">
             <thead class="table-dark">
                 <tr>
@@ -34,6 +44,7 @@
             </tbody>
         </table>
     </div>
+    {% endif %}
     {% endif %}
 </div>
 
@@ -72,16 +83,38 @@
 }
 
 .table-responsive {
-    max-height: 450px;
-    overflow-y: auto;
+    overflow-x: auto;
     margin-top: 0.5rem;
 }
 
-.table-responsive table {
-    border-collapse: separate;
-    border-spacing: 0;
-    border-radius: 0.5rem;
-    overflow: hidden;
+/* حالت شب */
+.night-mode {
+    background-color: #121212 !important;
+    color: #e0e0e0 !important;
+}
+.night-mode .query-box {
+    background-color: #1e1e1e;
+    color: #e0e0e0;
+    border-color: #555;
+}
+.night-mode .modern-table tbody tr:nth-of-type(odd) td {
+    background-color: #1a1a1a;
+}
+.night-mode .modern-table tbody tr:hover td {
+    background-color: #333;
+}
+.night-mode .modern-table th {
+    background-color: #222;
+    color: #f0f0f0;
 }
 </style>
+
+<script>
+const toggleBtn = document.getElementById("theme-toggle");
+const container = document.getElementById("sql-container");
+
+toggleBtn.addEventListener("click", () => {
+    container.classList.toggle("night-mode");
+});
+</script>
 {% endblock %}
