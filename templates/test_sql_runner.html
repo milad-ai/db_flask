@@ -1,25 +1,25 @@
 
 {% extends "base.html" %}
 {% block content %}
-<div class="container mt-4">
+<div class="container mt-4" style="direction: ltr;">
     <h4 class="mb-3">🚀 اجرای SQL روی جدول test</h4>
 
     <form method="POST">
         <div class="mb-3">
             <textarea name="query" class="form-control query-box" rows="4" placeholder="مثال: SELECT * FROM test;" required>{{ query or '' }}</textarea>
         </div>
-        <button type="submit" class="btn btn-primary">اجرای کویری</button>
+        <button type="submit" class="btn btn-primary">اجرای کوئری</button>
         <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">بازگشت به داشبورد</a>
     </form>
 
     {% if output %}
     <h5 class="mt-4">📊 خروجی:</h5>
     <div class="table-responsive shadow-sm rounded">
-        <table class="table table-sm table-hover modern-table text-start">
+        <table class="table table-sm table-hover modern-table">
             <thead class="table-dark">
                 <tr>
                     {% for col in output.columns %}
-                    <th>{{ col }}</th>
+                    <th class="text-start">{{ col }}</th>
                     {% endfor %}
                 </tr>
             </thead>
@@ -27,7 +27,7 @@
                 {% for row in output.rows %}
                 <tr>
                     {% for val in row %}
-                    <td class="{% if val is number %}number-cell{% else %}text-cell{% endif %}">{{ val }}</td>
+                    <td class="text-start">{{ val }}</td>
                     {% endfor %}
                 </tr>
                 {% endfor %}
@@ -38,7 +38,6 @@
 </div>
 
 <style>
-/* باکس textarea جذاب */
 .query-box {
     direction: ltr;
     text-align: left;
@@ -56,32 +55,15 @@
     box-shadow: 0 0 8px rgba(33,112,147,0.4);
 }
 
-/* جدول مدرن و چپ چین */
 .modern-table th, .modern-table td {
     padding: 0.6rem 0.8rem;
     vertical-align: middle;
     border: 1px solid #dee2e6;
-    transition: background-color 0.2s;
     font-family: monospace;
     font-size: 0.9rem;
     text-align: left;
 }
 
-/* سلول‌های عددی */
-.number-cell {
-    background-color: #d0e7ff;
-    text-align: right;
-    font-weight: 500;
-    border-radius: 4px;
-}
-
-/* سلول‌های متنی */
-.text-cell {
-    background-color: #ffffff;
-    border-radius: 4px;
-}
-
-/* ردیف‌ها و هاور */
 .modern-table tbody tr:nth-of-type(odd) td {
     background-color: #f7f9fc;
 }
@@ -89,14 +71,12 @@
     background-color: #cce5ff;
 }
 
-/* اسکرول جدول */
 .table-responsive {
     max-height: 450px;
     overflow-y: auto;
     margin-top: 0.5rem;
 }
 
-/* سایه و گرد شدن برای کل جدول */
 .table-responsive table {
     border-collapse: separate;
     border-spacing: 0;
