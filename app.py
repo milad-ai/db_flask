@@ -33,26 +33,47 @@ WELCOME_MD = (
 
 def utc_to_tehran(utc_dt):
     """تبدیل زمان UTC به ساعت تهران"""
-    utc_zone = pytz.utc
-    tehran_zone = pytz.timezone('Asia/Tehran')
-    utc_dt = utc_zone.localize(utc_dt)
-    tehran_dt = utc_dt.astimezone(tehran_zone)
-    return tehran_dt
+    try:
+        if isinstance(utc_dt, str):
+            utc_dt = datetime.strptime(utc_dt, "%Y-%m-%d %H:%M:%S")
+        
+        utc_zone = pytz.utc
+        tehran_zone = pytz.timezone('Asia/Tehran')
+        
+        if utc_dt.tzinfo is None:
+            utc_dt = utc_zone.localize(utc_dt)
+        
+        tehran_dt = utc_dt.astimezone(tehran_zone)
+        return tehran_dt
+    except Exception as e:
+        app.logger.error(f"Error in utc_to_tehran: {e}")
+        return utc_dt
 
 def gregorian_to_jalali_fa(dt):
     """تبدیل تاریخ میلادی به شمسی فارسی"""
-    jdate = jdatetime.date.fromgregorian(date=dt.date())
-    day = jdate.day
-    month_name = jdate.j_months_fa[jdate.month - 1]
-    year = jdate.year
-    return f"{day} {month_name} {year}"
+    try:
+        if isinstance(dt, str):
+            dt = datetime.strptime(dt, "%Y-%m-%d %H:%M:%S")
+        
+        jdate = jdatetime.date.fromgregorian(date=dt.date())
+        day = jdate.day
+        month_name = jdate.j_months_fa[jdate.month - 1]
+        year = jdate.year
+        return f"{day} {month_name} {year}"
+    except Exception as e:
+        app.logger.error(f"Error in gregorian_to_jalali_fa: {e}")
+        return "خطا در تبدیل تاریخ"
 
 def format_datetime_fa(dt):
     """فرمت‌بندی تاریخ و زمان به فارسی"""
-    tehran_dt = utc_to_tehran(dt)
-    date_fa = gregorian_to_jalali_fa(tehran_dt)
-    time_str = tehran_dt.strftime("%H:%M")
-    return f"{date_fa} - {time_str}"
+    try:
+        tehran_dt = utc_to_tehran(dt)
+        date_fa = gregorian_to_jalali_fa(tehran_dt)
+        time_str = tehran_dt.strftime("%H:%M")
+        return f"{date_fa} - {time_str}"
+    except Exception as e:
+        app.logger.error(f"Error in format_datetime_fa: {e}")
+        return "خطا در تبدیل تاریخ"
 
 def parse_queries(sql_text: str):
     splits = re.split(r"#\s*number\s*\d+", sql_text, flags=re.IGNORECASE)
@@ -207,6 +228,10 @@ def submit():
 
     new_submission_count = submission_count + 1
     remaining = 10 - new_submission_count
+    
+    # ذخیره زمان به صورت رشته برای جلوگیری از مشکلات serialization
+    current_time = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
+    
     session["result"] = {
         "name": name,
         "student_id": student_id,
@@ -217,7 +242,7 @@ def submit():
         "incorrect": incorrect_questions,
         "done": new_submission_count,
         "remaining": remaining,
-        "time": datetime.utcnow(),
+        "time": current_time,  # ذخیره به صورت رشته
     }
     return redirect(url_for("result"))
 
@@ -267,8 +292,8 @@ def result():
         try:
             data["time_fa"] = format_datetime_fa(data["time"])
         except Exception as e:
-            app.logger.error(f"Error converting time: {e}")
-            data["time_fa"] = "خطا در تبدیل تاریخ"
+            app.logger.error(f"Error converting time in result route: {e}")
+            data["time_fa"] = f"خطا در تبدیل تاریخ: {str(e)}"
     else:
         data["time_fa"] = "نامشخص"
     
@@ -387,5 +412,14 @@ def test_date():
     UTC: {now_utc}<br>
     Tehran: {tehran_time}<br>
     Jalali FA: {jalali_fa}<br>
-    Formatted: {formatted}
+    Formatted: {formatted}<br><br>
+    
+    Test string conversion:<br>
     """
+    
+    # تست تبدیل رشته
+    test_str = "2024-08-28 10:30:45"
+    test_result = format_datetime_fa(test_str)
+    return f"String '{test_str}' -> {test_result}"
+
+
