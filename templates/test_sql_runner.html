@@ -6,7 +6,7 @@
 
     <form method="POST">
         <div class="mb-3">
-            <textarea name="query" class="form-control text-start" rows="4" placeholder="مثال: SELECT * FROM test;" required>{{ query }}</textarea>
+            <textarea name="query" class="form-control query-box" rows="4" placeholder="مثال: SELECT * FROM test;" required>{{ query or '' }}</textarea>
         </div>
         <button type="submit" class="btn btn-primary">اجرای کویری</button>
         <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">بازگشت به داشبورد</a>
@@ -15,7 +15,7 @@
     {% if output %}
     <h5 class="mt-4">📊 خروجی:</h5>
     <div class="table-responsive shadow-sm rounded">
-        <table class="table table-sm table-hover modern-table">
+        <table class="table table-sm table-hover modern-table text-start">
             <thead class="table-dark">
                 <tr>
                     {% for col in output.columns %}
@@ -38,17 +38,25 @@
 </div>
 
 <style>
-textarea.text-start {
+/* باکس textarea جذاب */
+.query-box {
     direction: ltr;
     text-align: left;
     font-family: monospace;
     font-size: 0.95rem;
-    background-color: #f8f9fa;
-    border: 1px solid #ced4da;
-    border-radius: 0.35rem;
+    background-color: #f0f8ff;
+    border: 1px solid #4eb8dd;
+    border-radius: 0.5rem;
+    padding: 0.75rem;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    transition: 0.2s all;
+}
+.query-box:focus {
+    border-color: #217093;
+    box-shadow: 0 0 8px rgba(33,112,147,0.4);
 }
 
-/* جدول مدرن */
+/* جدول مدرن و چپ چین */
 .modern-table th, .modern-table td {
     padding: 0.6rem 0.8rem;
     vertical-align: middle;
@@ -56,6 +64,7 @@ textarea.text-start {
     transition: background-color 0.2s;
     font-family: monospace;
     font-size: 0.9rem;
+    text-align: left;
 }
 
 /* سلول‌های عددی */
@@ -69,7 +78,6 @@ textarea.text-start {
 /* سلول‌های متنی */
 .text-cell {
     background-color: #ffffff;
-    text-align: left;
     border-radius: 4px;
 }
 
