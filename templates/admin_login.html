@@ -1,43 +1,114 @@
 
 <!DOCTYPE html>
-<html dir="rtl">
+<html dir="rtl" lang="fa">
 <head>
     <meta charset="UTF-8">
-    <title>ورود ادمین</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ورود ادمین - سیستم ارسال تمرین</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            font-family: 'Vazir', 'Tanha', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .login-card {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+        .login-header {
+            background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+        .login-body {
+            padding: 2rem;
+        }
+        .form-control {
+            border-radius: 8px;
+            padding: 12px;
+            border: 2px solid #e3e6f0;
+            transition: all 0.3s;
+        }
+        .form-control:focus {
+            border-color: #4e73df;
+            box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+        }
+        .btn-login {
+            background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .btn-login:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(78, 115, 223, 0.4);
+        }
+    </style>
 </head>
-<body class="bg-light">
-    <div class="container mt-5">
+<body>
+    <div class="container">
         <div class="row justify-content-center">
-            <div class="col-md-4">
-                <div class="card shadow">
-                    <div class="card-header bg-primary text-white text-center">
-                        <h4>ورود ادمین</h4>
+            <div class="col-md-6 col-lg-5">
+                <div class="login-card">
+                    <div class="login-header">
+                        <h3 class="mb-3">
+                            <i class="bi bi-shield-lock me-2"></i>
+                            ورود به پنل ادمین
+                        </h3>
+                        <p class="mb-0">سیستم مدیریت ارسال تمرین‌های دانشجویان</p>
                     </div>
-                    <div class="card-body">
+                    <div class="login-body">
                         {% with messages = get_flashed_messages(with_categories=true) %}
                             {% if messages %}
                                 {% for category, message in messages %}
-                                    <div class="alert alert-{{ category }}">{{ message }}</div>
+                                    <div class="alert alert-{{ category }} alert-dismissible fade show">
+                                        <i class="bi bi-{% if category == 'success' %}check-circle{% else %}exclamation-triangle{% endif %} me-2"></i>
+                                        {{ message }}
+                                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                    </div>
                                 {% endfor %}
                             {% endif %}
                         {% endwith %}
                         
                         <form method="POST">
                             <div class="mb-3">
-                                <label class="form-label">نام کاربری</label>
-                                <input type="text" name="username" class="form-control" required>
+                                <label class="form-label fw-bold">نام کاربری</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="bi bi-person"></i>
+                                    </span>
+                                    <input type="text" name="username" class="form-control" placeholder="نام کاربری خود را وارد کنید" required>
+                                </div>
                             </div>
-                            <div class="mb-3">
-                                <label class="form-label">رمز عبور</label>
-                                <input type="password" name="password" class="form-control" required>
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">رمز عبور</label>
+                                <div class="input-group">
+                                    <span class="input-group-text">
+                                        <i class="bi bi-key"></i>
+                                    </span>
+                                    <input type="password" name="password" class="form-control" placeholder="رمز عبور خود را وارد کنید" required>
+                                </div>
                             </div>
-                            <button type="submit" class="btn btn-primary w-100">ورود</button>
+                            <button type="submit" class="btn btn-login w-100">
+                                <i class="bi bi-box-arrow-in-right me-2"></i>
+                                ورود به سیستم
+                            </button>
                         </form>
                     </div>
                 </div>
             </div>
         </div>
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
