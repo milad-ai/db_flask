@@ -494,25 +494,35 @@ def admin_submissions():
             
             query = text(str(query) + " ORDER BY submission_time DESC")
             
-            rows = conn.execute(query, params).mappings().all()
+            # تبدیل به لیست از دیکشنری‌ها
+            rows = conn.execute(query, params).fetchall()
             
-            # تبدیل زمان‌ها به فرمت فارسی
+            # تبدیل به لیست از دیکشنری‌های قابل تغییر
+            result_rows = []
             for row in rows:
-                if row["submission_time"]:
-                    row["submission_time_fa"] = format_datetime_fa(row["submission_time"])
-                else:
-                    row["submission_time_fa"] = "نامشخص"
+                row_dict = {
+                    "student_id": row[0],
+                    "name": row[1],
+                    "major": row[2],
+                    "hw": row[3],
+                    "correct_count": row[4],
+                    "submission_time": row[5],
+                    "submission_time_fa": format_datetime_fa(row[5]) if row[5] else "نامشخص"
+                }
+                result_rows.append(row_dict)
                     
     except Exception as e:
         flash(f"خطا در بارگذاری ارسال‌ها: {e}", "danger")
-        rows = []
+        result_rows = []
     
     return render_template("admin_submissions.html", 
-                         rows=rows, 
+                         rows=result_rows, 
                          majors=MAJORS, 
                          hw_numbers=HW_NUMBERS,
                          selected_major=major,
                          selected_hw=hw)
+
+
 
 @app.route("/admin/logout")
 def admin_logout():
