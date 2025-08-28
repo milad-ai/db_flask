@@ -1,68 +1,221 @@
 
 <!DOCTYPE html>
-<html dir="rtl">
+<html dir="rtl" lang="fa">
 <head>
     <meta charset="UTF-8">
-    <title>اجرای کوئری - ادمین</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اجرای کوئری - پنل ادمین</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fc;
+            font-family: 'Vazir', 'Tanha', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .navbar-brand {
+            font-weight: bold;
+        }
+        .query-container {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            margin-bottom: 2rem;
+        }
+        .query-textarea {
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            border: 2px solid #e3e6f0;
+            border-radius: 8px;
+            padding: 15px;
+            min-height: 200px;
+            transition: all 0.3s;
+        }
+        .query-textarea:focus {
+            border-color: #4e73df;
+            box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+        }
+        .btn-run {
+            background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s;
+        }
+        .btn-run:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(78, 115, 223, 0.4);
+        }
+        .results-table {
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .table th {
+            background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+            color: white;
+            font-weight: 600;
+            border: none;
+        }
+        .table-hover tbody tr:hover {
+            background-color: rgba(78, 115, 223, 0.1);
+        }
+        .badge-success {
+            background-color: #28a745;
+        }
+        .badge-info {
+            background-color: #17a2b8;
+        }
+    </style>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container">
-            <a class="navbar-brand" href="#">پنل ادمین</a>
-            <div class="navbar-nav ms-auto">
-                <a class="nav-link" href="{{ url_for('admin_dashboard') }}">داشبورد</a>
-                <a class="nav-link active" href="{{ url_for('admin_query') }}">اجرای کوئری</a>
-                <a class="nav-link" href="{{ url_for('admin_submissions') }}">ارسال‌ها</a>
-                <a class="nav-link" href="{{ url_for('admin_logout') }}">خروج</a>
+            <a class="navbar-brand" href="{{ url_for('admin_dashboard') }}">
+                <i class="bi bi-speedometer2 me-2"></i>
+                پنل ادمین
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('admin_dashboard') }}">
+                            <i class="bi bi-house me-1"></i>
+                            داشبورد
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{{ url_for('admin_query') }}">
+                            <i class="bi bi-database me-1"></i>
+                            اجرای کوئری
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('admin_submissions') }}">
+                            <i class="bi bi-list-check me-1"></i>
+                            ارسال‌ها
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('admin_stats') }}">
+                            <i class="bi bi-bar-chart me-1"></i>
+                            آمار
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('admin_logout') }}">
+                            <i class="bi bi-box-arrow-right me-1"></i>
+                            خروج
+                        </a>
+                    </li>
+                </ul>
             </div>
         </div>
     </nav>
 
     <div class="container mt-4">
-        <h2>اجرای کوئری SQL</h2>
-        
-        {% with messages = get_flashed_messages(with_categories=true) %}
-            {% if messages %}
-                {% for category, message in messages %}
-                    <div class="alert alert-{{ category }}">{{ message }}</div>
-                {% endfor %}
-            {% endif %}
-        {% endwith %}
+        <div class="row">
+            <div class="col-12">
+                <div class="d-flex justify-content-between align-items-center mb-4">
+                    <h2 class="mb-0">
+                        <i class="bi bi-database text-primary me-2"></i>
+                        اجرای کوئری SQL
+                    </h2>
+                    <span class="badge bg-info">
+                        <i class="bi bi-info-circle me-1"></i>
+                        دسترسی کامل به دیتابیس
+                    </span>
+                </div>
 
-        <form method="POST">
-            <div class="mb-3">
-                <label class="form-label">کوئری SQL:</label>
-                <textarea name="query" class="form-control" rows="5" required>{{ query }}</textarea>
-            </div>
-            <button type="submit" class="btn btn-primary">اجرای کوئری</button>
-        </form>
+                <div class="query-container">
+                    <form method="POST">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">
+                                <i class="bi bi-code-slash me-1"></i>
+                                کوئری SQL:
+                            </label>
+                            <textarea 
+                                name="query" 
+                                class="form-control query-textarea" 
+                                placeholder="SELECT * FROM table_name;"
+                                required
+                                rows="8">{{ query }}</textarea>
+                        </div>
+                        
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div>
+                                <span class="badge bg-warning text-dark">
+                                    <i class="bi bi-exclamation-triangle me-1"></i>
+                                    احتیاط: دسترسی مستقیم به دیتابیس
+                                </span>
+                            </div>
+                            <button type="submit" class="btn btn-run">
+                                <i class="bi bi-play-circle me-1"></i>
+                                اجرای کوئری
+                            </button>
+                        </div>
+                    </form>
+                </div>
 
-        {% if output %}
-        <div class="mt-4">
-            <h4>نتایج:</h4>
-            <div class="table-responsive">
-                <table class="table table-striped table-bordered">
-                    <thead>
-                        <tr>
-                            {% for column in output.columns %}
-                                <th>{{ column }}</th>
-                            {% endfor %}
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for row in output.rows %}
-                            <tr>
-                                {% for value in row %}
-                                    <td>{{ value }}</td>
-                                {% endfor %}
-                            </tr>
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }} alert-dismissible fade show">
+                                <i class="bi bi-{% if category == 'success' %}check-circle{% else %}exclamation-triangle{% endif %} me-2"></i>
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
                         {% endfor %}
-                    </tbody>
-                </table>
+                    {% endif %}
+                {% endwith %}
+
+                {% if output %}
+                <div class="query-container">
+                    <div class="d-flex justify-content-between align-items-center mb-3">
+                        <h5 class="mb-0">
+                            <i class="bi bi-table text-success me-2"></i>
+                            نتایج کوئری
+                        </h5>
+                        <span class="badge bg-success">
+                            {{ output.rows|length }} رکورد
+                        </span>
+                    </div>
+
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover results-table">
+                            <thead>
+                                <tr>
+                                    {% for column in output.columns %}
+                                        <th>{{ column }}</th>
+                                    {% endfor %}
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for row in output.rows %}
+                                    <tr>
+                                        {% for value in row %}
+                                            <td>
+                                                {% if value is none %}
+                                                    <span class="text-muted">NULL</span>
+                                                {% else %}
+                                                    {{ value }}
+                                                {% endif %}
+                                            </td>
+                                        {% endfor %}
+                                    </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                {% endif %}
             </div>
         </div>
-        {% endif %}
     </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
