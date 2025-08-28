@@ -305,3 +305,40 @@ def change_password():
             return redirect(url_for("change_password"))
 
     return render_template("change_password.html")
+
+
+
+
+
+@app.route("/run_test_query", methods=["GET", "POST"])
+def run_test_query():
+    if "student_id" not in session:
+        flash("ابتدا وارد شوید.", "warning")
+        return redirect(url_for("login"))
+
+    output = None
+    query_text = ""
+
+    if request.method == "POST":
+        query_text = request.form.get("query", "").strip()
+
+        # فقط SELECT مجاز است
+        if not query_text.lower().startswith("select"):
+            flash("فقط دستورات SELECT مجاز است.", "danger")
+            return redirect(url_for("run_test_query"))
+
+        # مطمئن شو فقط روی جدول test اجرا میشه
+        if "test" not in query_text.lower():
+            flash("تنها جدول 'test' قابل استفاده است.", "danger")
+            return redirect(url_for("run_test_query"))
+
+        try:
+            with engine.begin() as conn:
+                result = conn.execute(text(query_text))
+                columns = result.keys()
+                rows = result.fetchall()
+                output = {"columns": columns, "rows": rows}
+        except Exception as e:
+            flash(f"خطا در اجرای SQL: {e}", "danger")
+
+    return render_template("test_sql_runner.html", output=output, query=query_text)
