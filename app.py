@@ -637,6 +637,9 @@ def admin_teacher_queries():
                          queries=result_rows, 
                          majors=MAJORS,
                          selected_major=major)
+
+
+
 @app.route("/run_test_query", methods=["GET", "POST"])
 def run_test_query():
     if "student_id" not in session:
@@ -669,21 +672,33 @@ def run_test_query():
         try:
             with engine.begin() as conn:
                 result = conn.execute(text(query_text))
-                columns = result.keys()
+                columns = list(result.keys())  # تبدیل به لیست معمولی
                 rows = result.fetchall()
                 output = {"columns": columns, "rows": rows}
+                
+                # تبدیل ردیف‌ها به فرمت قابل سریال‌سازی
+                serializable_rows = []
+                for row in rows:
+                    # تبدیل هر ردیف به لیست یا دیکشنری
+                    if hasattr(row, '_asdict'):
+                        # اگر ردیف می‌تواند به دیکشنری تبدیل شود
+                        serializable_rows.append(row._asdict())
+                    else:
+                        # در غیر این صورت به لیست تبدیل کنیم
+                        serializable_rows.append(list(row))
                 
                 # ذخیره کوئری و خروجی در session برای استفاده در ارسال به مدرس
                 session["teacher_query"] = query_text
                 session["teacher_output"] = json.dumps({
                     "columns": columns,
-                    "rows": [list(row) for row in rows]  # تبدیل tuple به list برای JSON
-                })
+                    "rows": serializable_rows
+                }, ensure_ascii=False, default=str)
                 
         except Exception as e:
             error = f"خطا در اجرای SQL: {e}"
 
     return render_template("test_sql_runner.html", output=output, query=query_text, error=error)
+
 
 @app.route("/send_to_teacher", methods=["GET"])
 def send_to_teacher():
@@ -695,10 +710,9 @@ def send_to_teacher():
     query = session.get("teacher_query", "")
     output_json = session.get("teacher_output", "")
     
-    try:
-        output = json.loads(output_json) if output_json else None
-    except:
-        output = None
+    if not query:
+        flash("هیچ کوئری برای ارسال یافت نشد.", "warning")
+        return redirect(url_for('run_test_query'))
     
     # ذخیره اطلاعات ارسال در دیتابیس
     try:
@@ -736,12 +750,23 @@ def send_to_teacher():
         session.pop("teacher_query", None)
         session.pop("teacher_output", None)
         
-        flash('کوئری با موفقیت برای مدرس ارسال شد.', 'success')
+        flash('کوئری و نتایج با موفقیت برای مدرس ارسال شد.', 'success')
     except Exception as e:
         app.logger.error(f"Error saving query: {e}")
-        flash('خطا در ارسال کوئری برای مدرس.', 'danger')
+        flash(f'خطا در ارسال کوئری برای مدرس: {str(e)}', 'danger')
     
     return redirect(url_for('run_test_query'))
+
+
+
+
+
+
+
+
+
+
+
 
 
 
