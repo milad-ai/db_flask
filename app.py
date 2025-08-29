@@ -682,8 +682,9 @@ def admin_teacher_queries():
                          majors=MAJORS,
                          selected_major=major)
 
-# مسیر ارسال کوئری برای مدرس
-@app.route("/send_to_teacher", methods=["POST"])
+
+
+@app.route("/send_to_teacher", methods=["GET"])
 def send_to_teacher():
     if "student_id" not in session:
         flash("ابتدا وارد شوید.", "warning")
@@ -740,8 +741,6 @@ def send_to_teacher():
         flash('خطا در ارسال کوئری برای مدرس.', 'danger')
     
     return redirect(url_for('run_test_query'))
-
-
 
 @app.template_filter('tojson')
 def tojson_filter(obj):
