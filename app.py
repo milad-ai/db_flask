@@ -371,17 +371,6 @@ def change_password():
 
     return render_template("change_password.html")
 
-
-
-
-
-
-
-
-
-
-
-
 @app.route("/run_test_query", methods=["GET", "POST"])
 def run_test_query():
     if "student_id" not in session:
@@ -390,26 +379,19 @@ def run_test_query():
 
     output = None
     query_text = ""
-    error = None
 
     if request.method == "POST":
-        # بررسی اگر دکمه ارسال به مدرس زده شده
-        if "send_to_teacher" in request.form:
-            # استفاده از اطلاعاتی که قبلاً در session ذخیره شده
-            return redirect(url_for("send_to_teacher"))
-        
-        # اجرای کوئری معمولی
         query_text = request.form.get("query", "").strip()
 
         # فقط SELECT مجاز است
         if not query_text.lower().startswith("select"):
-            error = "فقط دستورات SELECT مجاز است."
-            return render_template("test_sql_runner.html", error=error, query=query_text)
+            flash("فقط دستورات SELECT مجاز است.", "danger")
+            return redirect(url_for("run_test_query"))
 
         # مطمئن شو فقط روی جدول test اجرا میشه
         if "test" not in query_text.lower():
-            error = "تنها جدول 'test' قابل استفاده است."
-            return render_template("test_sql_runner.html", error=error, query=query_text)
+            flash("تنها جدول 'test' قابل استفاده است.", "danger")
+            return redirect(url_for("run_test_query"))
 
         try:
             with engine.begin() as conn:
@@ -417,76 +399,13 @@ def run_test_query():
                 columns = result.keys()
                 rows = result.fetchall()
                 output = {"columns": columns, "rows": rows}
-                
-                # ذخیره کوئری و خروجی در session برای استفاده در ارسال به مدرس
-                session["teacher_query"] = query_text
-                session["teacher_output"] = json.dumps({
-                    "columns": columns,
-                    "rows": [list(row) for row in rows]  # تبدیل tuple به list برای JSON
-                })
-                
         except Exception as e:
-            error = f"خطا در اجرای SQL: {e}"
+            flash(f"خطا در اجرای SQL: {e}", "danger")
 
-    return render_template("test_sql_runner.html", output=output, query=query_text, error=error)
+    return render_template("test_sql_runner.html", output=output, query=query_text)
 
-@app.route("/send_to_teacher", methods=["GET"])
-def send_to_teacher():
-    if "student_id" not in session:
-        flash("ابتدا وارد شوید.", "warning")
-        return redirect(url_for("login"))
-    
-    # دریافت اطلاعات از session
-    query = session.get("teacher_query", "")
-    output_json = session.get("teacher_output", "")
-    
-    try:
-        output = json.loads(output_json) if output_json else None
-    except:
-        output = None
-    
-    # ذخیره اطلاعات ارسال در دیتابیس
-    try:
-        with engine.begin() as conn:
-            # ایجاد جدول اگر وجود ندارد
-            conn.execute(text("""
-                CREATE TABLE IF NOT EXISTS teacher_queries (
-                    id SERIAL PRIMARY KEY,
-                    student_id TEXT NOT NULL,
-                    student_name TEXT NOT NULL,
-                    major TEXT NOT NULL,
-                    query TEXT NOT NULL,
-                    output TEXT,
-                    submission_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                )
-            """))
-            
-            # درج داده
-            conn.execute(
-                text("""
-                    INSERT INTO teacher_queries 
-                    (student_id, student_name, major, query, output)
-                    VALUES (:student_id, :student_name, :major, :query, :output)
-                """),
-                {
-                    "student_id": session["student_id"],
-                    "student_name": session["name"],
-                    "major": session["major"],
-                    "query": query,
-                    "output": output_json  # ذخیره به صورت JSON
-                }
-            )
-        
-        # پاک کردن اطلاعات از session
-        session.pop("teacher_query", None)
-        session.pop("teacher_output", None)
-        
-        flash('کوئری با موفقیت برای مدرس ارسال شد.', 'success')
-    except Exception as e:
-        app.logger.error(f"Error saving query: {e}")
-        flash('خطا در ارسال کوئری برای مدرس.', 'danger')
-    
-    return redirect(url_for('run_test_query'))
+# ==================== روت‌های ادمین ====================
+
 
 @app.route("/admin/login", methods=["GET", "POST"])
 def admin_login():
@@ -751,12 +670,59 @@ def admin_teacher_queries():
                          majors=MAJORS,
                          selected_major=major)
 
-
-
-
-@app.template_filter('tojson')
-def tojson_filter(obj):
-    return json.dumps(obj, ensure_ascii=False)
+# مسیر ارسال کوئری برای مدرس
+@app.route("/send_to_teacher", methods=["POST"])
+def send_to_teacher():
+    if "student_id" not in session:
+        flash("ابتدا وارد شوید.", "warning")
+        return redirect(url_for("login"))
+    
+    query = request.form.get("query")
+    output_json = request.form.get("output")
+    
+    try:
+        output = json.loads(output_json) if output_json else None
+    except:
+        output = None
+    
+    # ذخیره اطلاعات ارسال در دیتابیس
+    try:
+        with engine.begin() as conn:
+            # ایجاد جدول اگر وجود ندارد (با syntax مناسب PostgreSQL)
+            conn.execute(text("""
+                CREATE TABLE IF NOT EXISTS teacher_queries (
+                    id SERIAL PRIMARY KEY,
+                    student_id TEXT NOT NULL,
+                    student_name TEXT NOT NULL,
+                    major TEXT NOT NULL,
+                    query TEXT NOT NULL,
+                    output TEXT,
+                    submission_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            """))
+            
+            # درج داده
+            conn.execute(
+                text("""
+                    INSERT INTO teacher_queries 
+                    (student_id, student_name, major, query, output)
+                    VALUES (:student_id, :student_name, :major, :query, :output)
+                """),
+                {
+                    "student_id": session["student_id"],
+                    "student_name": session["name"],
+                    "major": session["major"],
+                    "query": query,
+                    "output": json.dumps(output) if output else None
+                }
+            )
+        
+        flash('کوئری با موفقیت برای مدرس ارسال شد.', 'success')
+    except Exception as e:
+        app.logger.error(f"Error saving query: {e}")
+        flash('خطا در ارسال کوئری برای مدرس.', 'danger')
+    
+    return redirect(url_for('run_test_query'))
 
 
 @app.route("/test_date")
