@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مدیریت کاربران - پنل مدرس</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fc;
+            font-family: 'Vazir', 'Tanha', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .navbar-brand {
+            font-weight: bold;
+        }
+        .main-container {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 20px 0;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        }
+        .page-title {
+            color: #2c3e50;
+            font-weight: 700;
+            margin-bottom: 25px;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #ffc107;
+        }
+        .user-table {
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .user-table th {
+            background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+            color: white;
+            font-weight: 600;
+            padding: 15px;
+        }
+        .user-table td {
+            padding: 12px 15px;
+            vertical-align: middle;
+        }
+        .user-table tr:hover {
+            background-color: #f8f9fa;
+        }
+        .badge-primary {
+            background: #4e73df;
+        }
+        .badge-success {
+            background: #28a745;
+        }
+        .btn-change-password {
+            background: #ffc107;
+            border: none;
+            color: #2c3e50;
+            transition: all 0.3s;
+        }
+        .btn-change-password:hover {
+            background: #ff9800;
+            transform: translateY(-1px);
+        }
+        .form-container {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 25px;
+            border: 1px solid #e9ecef;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <a class="navbar-brand" href="{{ url_for('admin_dashboard') }}">
+                <i class="bi bi-speedometer2 me-2"></i>
+                پنل مدرس
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('admin_dashboard') }}">
+                            <i class="bi bi-house me-1"></i>
+                            داشبورد
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('admin_query') }}">
+                            <i class="bi bi-database me-1"></i>
+                            اجرای کوئری
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('admin_submissions') }}">
+                            <i class="bi bi-list-check me-1"></i>
+                            ارسال‌ها
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('admin_stats') }}">
+                            <i class="bi bi-bar-chart me-1"></i>
+                            آمار
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" href="{{ url_for('admin_manage_users') }}">
+                            <i class="bi bi-people me-1"></i>
+                            مدیریت کاربران
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('admin_logout') }}">
+                            <i class="bi bi-box-arrow-right me-1"></i>
+                            خروج
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div class="main-container">
+            <h2 class="page-title">
+                <i class="bi bi-people text-warning me-2"></i>
+                مدیریت کاربران
+            </h2>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }} alert-dismissible fade show">
+                            <i class="bi bi-{% if category == 'success' %}check-circle{% else %}exclamation-triangle{% endif %} me-2"></i>
+                            {{ message }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                        </div>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <!-- فرم تغییر رمز عبور -->
+            <div class="form-container">
+                <h5 class="mb-3 text-dark">
+                    <i class="bi bi-key me-2"></i>
+                    تغییر رمز عبور دانشجو
+                </h5>
+                <form method="POST" class="row g-3">
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">شماره دانشجویی</label>
+                        <input type="text" name="student_id" class="form-control" placeholder="شماره دانشجویی" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">رمز عبور جدید</label>
+                        <input type="password" name="new_password" class="form-control" placeholder="رمز عبور جدید" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label fw-bold">&nbsp;</label>
+                        <button type="submit" class="btn btn-warning w-100">
+                            <i class="bi bi-arrow-repeat me-1"></i>
+                            تغییر رمز
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- لیست کاربران -->
+            <div class="table-responsive">
+                <table class="table table-striped user-table">
+                    <thead>
+                        <tr>
+                            <th>شماره دانشجویی</th>
+                            <th>نام و نام خانوادگی</th>
+                            <th>رشته</th>
+                            <th>ایمیل</th>
+                            <th>عملیات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for user in users %}
+                        <tr>
+                            <td>
+                                <code>{{ user[0] }}</code>
+                            </td>
+                            <td>{{ user[1] }}</td>
+                            <td>
+                                <span class="badge badge-primary">{{ user[2] }}</span>
+                            </td>
+                            <td>
+                                {% if user[3] %}
+                                    <small>{{ user[3] }}</small>
+                                {% else %}
+                                    <span class="text-muted">ثبت نشده</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                <button class="btn btn-sm btn-change-password" 
+                                        onclick="fillForm('{{ user[0] }}')">
+                                    <i class="bi bi-key me-1"></i>
+                                    تغییر رمز
+                                </button>
+                                <a href="{{ url_for('admin_delete_user', student_id=user[0]) }}" 
+                                   class="btn btn-sm btn-danger"
+                                   onclick="return confirm('آیا از حذف این کاربر مطمئن هستید؟')">
+                                    <i class="bi bi-trash me-1"></i>
+                                    حذف
+                                </a>
+                            </td>
+                        </tr>
+                        {% else %}
+                        <tr>
+                            <td colspan="5" class="text-center py-4">
+                                <i class="bi bi-people display-4 text-muted d-block mb-2"></i>
+                                <p class="text-muted">هیچ کاربری یافت نشد</p>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function fillForm(studentId) {
+            document.querySelector('input[name="student_id"]').value = studentId;
+            document.querySelector('input[name="new_password"]').focus();
+        }
+    </script>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
