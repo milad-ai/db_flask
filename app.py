@@ -412,12 +412,17 @@ def run_test_query():
                 columns = result.keys()
                 rows = result.fetchall()
                 output = {"columns": columns, "rows": rows}
+                
+                # ذخیره خروجی در session برای استفاده بعدی
+                session["current_output"] = json.dumps({
+                    "columns": columns,
+                    "rows": [list(row) for row in rows]  # تبدیل tuple به list برای JSON
+                })
+                
         except Exception as e:
             error = f"خطا در اجرای SQL: {e}"
 
     return render_template("test_sql_runner.html", output=output, query=query_text, error=error)
-# ==================== روت‌های ادمین ====================
-
 
 @app.route("/admin/login", methods=["GET", "POST"])
 def admin_login():
