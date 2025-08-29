@@ -1,84 +1,272 @@
+<!DOCTYPE html>
+<html dir="rtl" lang="fa">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>مدیریت جدول‌های مجاز - سیستم مدیریت</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #f8f9fc;
+            font-family: 'Vazir', 'Tanha', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .navbar-brand {
+            font-weight: bold;
+            font-size: 1.5rem;
+        }
+        .sidebar {
+            background: linear-gradient(180deg, #4e73df 0%, #224abe 100%);
+            min-height: 100vh;
+            color: white;
+        }
+        .sidebar .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            padding: 1rem 1.5rem;
+            margin: 0.2rem 0;
+            border-radius: 0;
+            transition: all 0.3s;
+        }
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            color: white;
+            background: rgba(255, 255, 255, 0.1);
+            border-left: 4px solid white;
+        }
+        .sidebar .nav-link i {
+            width: 20px;
+        }
+        .main-content {
+            padding: 20px;
+        }
+        .dashboard-card {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s;
+            border: none;
+            height: 100%;
+        }
+        .dashboard-card:hover {
+            transform: translateY(-5px);
+        }
+        .card-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        .welcome-section {
+            background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+        }
+        .card {
+            border-radius: 15px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+            border: none;
+        }
+        .card-header {
+            background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+            color: white;
+            border-radius: 15px 15px 0 0 !important;
+            font-weight: 600;
+            padding: 1.2rem 1.5rem;
+        }
+        .btn-success {
+            background: linear-gradient(135deg, #1cc88a 0%, #17a673 100%);
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-weight: 600;
+        }
+        .btn-success:hover {
+            background: linear-gradient(135deg, #17a673 0%, #148d63 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(28, 200, 138, 0.4);
+        }
+        .btn-danger {
+            background: linear-gradient(135deg, #e74a3b 0%, #be2617 100%);
+            border: none;
+            border-radius: 8px;
+            padding: 5px 15px;
+            font-weight: 600;
+        }
+        .btn-danger:hover {
+            background: linear-gradient(135deg, #be2617 0%, #a52214 100%);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(231, 74, 59, 0.4);
+        }
+        .form-control {
+            border-radius: 8px;
+            padding: 12px 15px;
+            border: 1px solid #e0e0e0;
+            transition: all 0.3s;
+        }
+        .form-control:focus {
+            border-color: #4e73df;
+            box-shadow: 0 0 0 3px rgba(78, 115, 223, 0.2);
+        }
+        .table th {
+            background-color: #4e73df;
+            color: white;
+        }
+        .table-striped tbody tr:nth-of-type(odd) {
+            background-color: rgba(78, 115, 223, 0.05);
+        }
+    </style>
+</head>
+<body>
+    <div class="container-fluid">
+        <div class="row">
+            <!-- نوار کناری -->
+            <div class="col-md-3 col-lg-2 sidebar px-0">
+                <div class="text-center py-4">
+                    <h4 class="mb-0">
+                        <i class="bi bi-shield-lock me-2"></i>
+                        پنل مدرس
+                    </h4>
+                </div>
+                <hr class="my-2">
+                <nav class="nav flex-column">
+                    <a class="nav-link" href="{{ url_for('admin_dashboard') }}">
+                        <i class="bi bi-speedometer2 me-2"></i>
+                        داشبورد
+                    </a>
+                    <a class="nav-link" href="{{ url_for('admin_query') }}">
+                        <i class="bi bi-database me-2"></i>
+                        اجرای کوئری
+                    </a>
+                    <a class="nav-link" href="{{ url_for('admin_submissions') }}">
+                        <i class="bi bi-list-check me-2"></i>
+                        ارسال‌ها
+                    </a>
+                    <a class="nav-link" href="{{ url_for('admin_manage_users') }}">
+                        <i class="bi bi-people me-2"></i>
+                        مدیریت کاربران
+                    </a>
+                    <a class="nav-link" href="{{ url_for('admin_teacher_queries') }}">
+                        <i class="bi bi-code-square me-2"></i>
+                        کوئری‌های ارسالی
+                    </a>
+                    <!-- لینک فعال برای مدیریت جدول‌های مجاز -->
+                    <a class="nav-link active" href="{{ url_for('admin_allowed_tables') }}">
+                        <i class="bi bi-table me-2"></i>
+                        جدول‌های مجاز
+                    </a>
+                    <hr class="my-2">
+                    <a class="nav-link" href="{{ url_for('admin_logout') }}">
+                        <i class="bi bi-box-arrow-right me-2"></i>
+                        خروج از سیستم
+                    </a>
+                </nav>
+            </div>
 
-{% extends "base.html" %}
-
-{% block content %}
-<div class="container mt-4">
-    <h2>مدیریت جدول‌های مجاز برای تست SQL</h2>
-    
-    <div class="card mb-4">
-        <div class="card-header">
-            افزودن جدول جدید
-        </div>
-        <div class="card-body">
-            <form method="POST">
-                <div class="row">
-                    <div class="col-md-4">
-                        <div class="form-group">
-                            <label for="table_name">نام جدول:</label>
-                            <input type="text" class="form-control" id="table_name" name="table_name" required>
+            <!-- محتوای اصلی -->
+            <div class="col-md-9 col-lg-10 main-content">
+                <!-- بخش خوش‌آمدگویی -->
+                <div class="welcome-section">
+                    <div class="row align-items-center">
+                        <div class="col-md-8">
+                            <h2 class="mb-3">
+                                <i class="bi bi-table me-2"></i>
+                                مدیریت جدول‌های مجاز
+                            </h2>
+                            <p class="mb-0">مدیریت جدول‌های قابل دسترسی برای تست SQL</p>
                         </div>
-                    </div>
-                    <div class="col-md-6">
-                        <div class="form-group">
-                            <label for="description">توضیحات (اختیاری):</label>
-                            <input type="text" class="form-control" id="description" name="description">
-                        </div>
-                    </div>
-                    <div class="col-md-2">
-                        <div class="form-group">
-                            <label>&nbsp;</label>
-                            <button type="submit" class="btn btn-success btn-block">افزودن</button>
+                        <div class="col-md-4 text-end">
+                            <i class="bi bi-database display-4 opacity-75"></i>
                         </div>
                     </div>
                 </div>
-            </form>
+
+                <!-- محتوای صفحه -->
+                <div class="card mb-4">
+                    <div class="card-header">
+                        افزودن جدول جدید
+                    </div>
+                    <div class="card-body">
+                        <form method="POST">
+                            <div class="row">
+                                <div class="col-md-4">
+                                    <div class="form-group">
+                                        <label for="table_name">نام جدول:</label>
+                                        <input type="text" class="form-control" id="table_name" name="table_name" required>
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="description">توضیحات (اختیاری):</label>
+                                        <input type="text" class="form-control" id="description" name="description">
+                                    </div>
+                                </div>
+                                <div class="col-md-2">
+                                    <div class="form-group">
+                                        <label>&nbsp;</label>
+                                        <button type="submit" class="btn btn-success btn-block">افزودن</button>
+                                    </div>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        جدول‌های مجاز
+                    </div>
+                    <div class="card-body">
+                        <div class="table-responsive">
+                            <table class="table table-striped">
+                                <thead>
+                                    <tr>
+                                        <th>نام جدول</th>
+                                        <th>توضیحات</th>
+                                        <th>تاریخ ایجاد</th>
+                                        <th>عملیات</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    <tr>
+                                        <td>students</td>
+                                        <td>جدول اطلاعات دانشجویان</td>
+                                        <td>1402/05/15</td>
+                                        <td>
+                                            <a href="#" class="btn btn-danger btn-sm" onclick="return confirm('آیا از حذف این جدول اطمینان دارید؟')">
+                                                حذف
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>courses</td>
+                                        <td>جدول اطلاعات دروس</td>
+                                        <td>1402/05/16</td>
+                                        <td>
+                                            <a href="#" class="btn btn-danger btn-sm" onclick="return confirm('آیا از حذف این جدول اطمینان دارید؟')">
+                                                حذف
+                                            </a>
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>grades</td>
+                                        <td>-</td>
+                                        <td>1402/05/17</td>
+                                        <td>
+                                            <a href="#" class="btn btn-danger btn-sm" onclick="return confirm('آیا از حذف این جدول اطمینان دارید؟')">
+                                                حذف
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
     </div>
 
-    <div class="card">
-        <div class="card-header">
-            جدول‌های مجاز
-        </div>
-        <div class="card-body">
-            {% if tables %}
-            <div class="table-responsive">
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th>نام جدول</th>
-                            <th>توضیحات</th>
-                            <th>تاریخ ایجاد</th>
-                            <th>عملیات</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for table in tables %}
-                        <tr>
-                            <td>{{ table[1] }}</td>
-                            <td>{{ table[2] if table[2] else '-' }}</td>
-                            <td>
-                                {% if table[3] %}
-                                    {{ table[3]|string }}  <!-- ابتدا بدون format نمایش می‌دهیم -->
-                                {% else %}
-                                    نامشخص
-                                {% endif %}
-                            </td>
-                            <td>
-                                <a href="{{ url_for('admin_delete_table', table_id=table[0]) }}" 
-                                   class="btn btn-danger btn-sm" 
-                                   onclick="return confirm('آیا از حذف این جدول اطمینان دارید؟')">
-                                    حذف
-                                </a>
-                            </td>
-                        </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            {% else %}
-            <p class="text-muted">هیچ جدولی تعریف نشده است.</p>
-            {% endif %}
-        </div>
-    </div>
-</div>
-{% endblock %}
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
