@@ -1,0 +1,78 @@
+
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2>مدیریت جدول‌های مجاز برای تست SQL</h2>
+    
+    <div class="card mb-4">
+        <div class="card-header">
+            افزودن جدول جدید
+        </div>
+        <div class="card-body">
+            <form method="POST">
+                <div class="row">
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label for="table_name">نام جدول:</label>
+                            <input type="text" class="form-control" id="table_name" name="table_name" required>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="form-group">
+                            <label for="description">توضیحات (اختیاری):</label>
+                            <input type="text" class="form-control" id="description" name="description">
+                        </div>
+                    </div>
+                    <div class="col-md-2">
+                        <div class="form-group">
+                            <label>&nbsp;</label>
+                            <button type="submit" class="btn btn-success btn-block">افزودن</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <div class="card">
+        <div class="card-header">
+            جدول‌های مجاز
+        </div>
+        <div class="card-body">
+            {% if tables %}
+            <div class="table-responsive">
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th>نام جدول</th>
+                            <th>توضیحات</th>
+                            <th>تاریخ ایجاد</th>
+                            <th>عملیات</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for table in tables %}
+                        <tr>
+                            <td>{{ table.table_name }}</td>
+                            <td>{{ table.description or '-' }}</td>
+                            <td>{{ format_datetime_fa(table.created_at) if table.created_at else 'نامشخص' }}</td>
+                            <td>
+                                <a href="{{ url_for('admin_delete_table', table_id=table.id) }}" 
+                                   class="btn btn-danger btn-sm" 
+                                   onclick="return confirm('آیا از حذف این جدول اطمینان دارید؟')">
+                                    حذف
+                                </a>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <p class="text-muted">هیچ جدولی تعریف نشده است.</p>
+            {% endif %}
+        </div>
+    </div>
+</div>
+{% endblock %}
