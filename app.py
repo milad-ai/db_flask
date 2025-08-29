@@ -652,23 +652,6 @@ def admin_allowed_tables():
         with engine.begin() as conn:
             app.logger.info("Database connection successful")
             
-            # ایجاد جدول اگر وجود ندارد
-            try:
-                app.logger.info("Creating table if not exists...")
-                conn.execute(text("""
-                    CREATE TABLE IF NOT EXISTS allowed_tables (
-                        id SERIAL PRIMARY KEY,
-                        table_name TEXT NOT NULL UNIQUE,
-                        description TEXT,
-                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                    )
-                """))
-                app.logger.info("Table creation/check completed")
-            except Exception as create_error:
-                app.logger.error(f"Error creating table: {str(create_error)}")
-                flash(f"خطا در ایجاد جدول: {str(create_error)}", "danger")
-                return redirect(url_for("admin_dashboard"))
-            
             # دریافت داده‌ها
             try:
                 app.logger.info("Fetching data from allowed_tables...")
@@ -677,13 +660,17 @@ def admin_allowed_tables():
                 )
                 tables = result.fetchall()
                 app.logger.info(f"Found {len(tables)} tables in database")
+                app.logger.info(f"Tables data: {tables}")
+                
             except Exception as select_error:
                 app.logger.error(f"Error selecting data: {str(select_error)}")
                 flash(f"خطا در دریافت داده‌ها: {str(select_error)}", "danger")
+                return render_template("admin_allowed_tables.html", tables=[])
             
     except Exception as e:
         app.logger.error(f"General error in admin_allowed_tables: {str(e)}")
         flash(f"خطای عمومی در اتصال به دیتابیس: {str(e)}", "danger")
+        return render_template("admin_allowed_tables.html", tables=[])
     
     # پردازش فرم اضافه کردن جدول جدید
     if request.method == "POST":
@@ -713,7 +700,11 @@ def admin_allowed_tables():
                 flash(f"خطا در اضافه کردن جدول: {error_msg}", "danger")
     
     app.logger.info("Rendering template with tables data")
-    return render_template("admin_allowed_tables.html", tables=tables)
+    try:
+        return render_template("admin_allowed_tables.html", tables=tables)
+    except Exception as template_error:
+        app.logger.error(f"Template rendering error: {str(template_error)}")
+        return f"خطا در نمایش صفحه: {str(template_error)}"
 
 @app.route("/admin/delete_table/<int:table_id>")
 def admin_delete_table(table_id):
@@ -781,7 +772,23 @@ def debug_database():
         return f"Database Error: {str(e)}"
 
 
-
+@app.route("/debug_tables_data")
+def debug_tables_data():
+    try:
+        with engine.begin() as conn:
+            result = conn.execute(
+                text("SELECT id, table_name, description, created_at FROM allowed_tables ORDER BY table_name")
+            )
+            tables = result.fetchall()
+            
+            output = "داده‌های جدول allowed_tables:<br><br>"
+            for i, table in enumerate(tables):
+                output += f"ردیف {i+1}: ID={table[0]}, Name={table[1]}, Desc={table[2]}, Date={table[3]}<br>"
+            
+            return output
+            
+    except Exception as e:
+        return f"Error: {str(e)}"
 
 
 
