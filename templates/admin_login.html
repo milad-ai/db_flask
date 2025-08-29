@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - DB_SBU Terminal</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -135,6 +137,17 @@
             position: relative;
         }
 
+        /* سیستم هشدار */
+        .alert {
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #ff0000;
+            background-color: rgba(255, 0, 0, 0.1);
+            border-radius: 4px;
+            color: #ff0000;
+            display: none;
+        }
+
         /* واکنش گرا برای موبایل */
         @media (max-width: 768px) {
             .db-terminal {
@@ -165,27 +178,33 @@
         </div>
 
         <div class="terminal-body">
-            <div class="command-line">
-                <div class="prompt">#~DB_SBU@username:$</div>
-                <div class="input-wrapper">
-                    <input type="text" name="username" class="form-input" id="username-input" autofocus>
-                    <span class="cursor" id="username-cursor"></span>
-                </div>
+            <div class="alert" id="error-alert">
+                ERROR: Invalid credentials. Access denied.
             </div>
 
-            <div class="command-line">
-                <div class="prompt">#~DB_SBU@password:$</div>
-                <div class="input-wrapper">
-                    <input type="password" name="password" class="form-input" id="password-input">
-                    <span class="cursor" id="password-cursor"></span>
+            <form id="login-form">
+                <div class="command-line">
+                    <div class="prompt">#~DB_SBU@username:$</div>
+                    <div class="input-wrapper">
+                        <input type="text" name="username" class="form-input" id="username-input" autofocus required>
+                        <span class="cursor" id="username-cursor"></span>
+                    </div>
                 </div>
-            </div>
 
-            <div class="command-line">
-                <button type="submit" class="btn-login" id="login-btn">
-                    ACCESS SYSTEM
-                </button>
-            </div>
+                <div class="command-line">
+                    <div class="prompt">#~DB_SBU@password:$</div>
+                    <div class="input-wrapper">
+                        <input type="password" name="password" class="form-input" id="password-input" required>
+                        <span class="cursor" id="password-cursor"></span>
+                    </div>
+                </div>
+
+                <div class="command-line">
+                    <button type="submit" class="btn-login" id="login-btn">
+                        ACCESS SYSTEM
+                    </button>
+                </div>
+            </form>
         </div>
     </div>
 
@@ -195,11 +214,15 @@
         const passwordInput = document.getElementById('password-input');
         const usernameCursor = document.getElementById('username-cursor');
         const passwordCursor = document.getElementById('password-cursor');
-        const loginBtn = document.getElementById('login-btn');
+        const loginForm = document.getElementById('login-form');
+        const errorAlert = document.getElementById('error-alert');
         
         // نمایش کرسر روی username در ابتدا
         usernameCursor.style.display = 'inline-block';
         passwordCursor.style.display = 'none';
+        
+        // مخفی کردن هشدارها در ابتدا
+        errorAlert.style.display = 'none';
         
         // فوکوس خودکار روی username
         usernameInput.focus();
@@ -224,40 +247,52 @@
         
         passwordInput.addEventListener('keydown', function(e) {
             if (e.key === 'Enter') {
-                loginBtn.click();
+                loginForm.dispatchEvent(new Event('submit'));
             }
         });
 
-        // شبیه سازی لاگین
-        loginBtn.addEventListener('click', function() {
+        // مدیریت ارسال فرم
+        loginForm.addEventListener('submit', function(e) {
+            e.preventDefault();
+            
             const username = usernameInput.value;
             const password = passwordInput.value;
             
             if (!username || !password) {
-                alert('ERROR: Username and password required!');
+                showError('ERROR: Username and password required!');
                 return;
             }
             
-            // نمایش وضعیت در حال پردازش
-            const terminalBody = document.querySelector('.terminal-body');
-            const statusLine = document.createElement('div');
-            statusLine.className = 'command-line';
-            statusLine.innerHTML = '<div class="prompt">#~DB_SBU@status:$</div><div>Authenticating...</div>';
-            terminalBody.appendChild(statusLine);
+            // مخفی کردن خطاهای قبلی
+            errorAlert.style.display = 'none';
             
-            // شبیه سازی تاخیر برای احراز هویت
-            setTimeout(() => {
-                const resultLine = document.createElement('div');
-                resultLine.className = 'command-line';
-                resultLine.innerHTML = '<div class="prompt">#~DB_SBU@result:$</div><div>Access granted! Redirecting...</div>';
-                terminalBody.appendChild(resultLine);
-                
-                // ریدایرکت بعد از 2 ثانیه
-                setTimeout(() => {
-                    alert('Login successful! (This would redirect in a real application)');
-                }, 2000);
-            }, 1500);
+            // بررسی اطلاعات ورود
+            const isValid = checkCredentials(username, password);
+            
+            if (isValid) {
+                // انتقال مستقیم به داشبورد ادمین بدون نمایش پیام
+                window.location.href = "admin_dashboard.html";
+            } else {
+                // نمایش خطا
+                showError('ERROR: Invalid credentials. Access denied.');
+            }
         });
+        
+        // تابع برای نمایش خطا
+        function showError(message) {
+            errorAlert.textContent = message;
+            errorAlert.style.display = 'block';
+        }
+        
+        // بررسی اطلاعات ورود
+        function checkCredentials(username, password) {
+            // اطلاعات ورود صحیح
+            const validUsername = "admin";
+            const validPassword = "admin123";
+            
+            // بررسی اطلاعات ورود
+            return username === validUsername && password === validPassword;
+        }
     </script>
 </body>
 </html>
