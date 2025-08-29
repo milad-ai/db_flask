@@ -603,6 +603,115 @@ def admin_delete_user(student_id):
     return redirect(url_for("admin_manage_users"))
 
 
+
+# مسیر مشاهده کوئری‌های ارسالی برای مدرس
+@app.route("/admin/teacher_queries")
+def admin_teacher_queries():
+    if not session.get("admin_logged_in"):
+        flash("لطفاً به عنوان ادمین وارد شوید.", "warning")
+        return redirect(url_for("admin_login"))
+    
+    major = request.args.get("major", "")
+    
+    try:
+        with engine.begin() as conn:
+            # ایجاد جدول اگر وجود ندارد
+            conn.execute(text("""
+                CREATE TABLE IF NOT EXISTS teacher_queries (
+                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    student_id TEXT NOT NULL,
+                    student_name TEXT NOT NULL,
+                    major TEXT NOT NULL,
+                    query TEXT NOT NULL,
+                    output TEXT,
+                    submission_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            """))
+            
+            # گرفتن لیست کوئری‌های ارسالی با فیلتر
+            query = text("""
+                SELECT id, student_id, student_name, major, query, output, submission_time
+                FROM teacher_queries
+                WHERE 1=1
+            """)
+            
+            params = {}
+            
+            if major:
+                query = text(str(query) + " AND major = :major")
+                params["major"] = major
+            
+            query = text(str(query) + " ORDER BY submission_time DESC")
+            
+            # تبدیل به لیست از دیکشنری‌ها
+            rows = conn.execute(query, params).fetchall()
+            
+            # تبدیل به لیست از دیکشنری‌های قابل تغییر
+            result_rows = []
+            for row in rows:
+                row_dict = {
+                    "id": row[0],
+                    "student_id": row[1],
+                    "student_name": row[2],
+                    "major": row[3],
+                    "query": row[4],
+                    "output": json.loads(row[5]) if row[5] else None,
+                    "submission_time": row[6],
+                    "submission_time_fa": format_datetime_fa(row[6]) if row[6] else "نامشخص"
+                }
+                result_rows.append(row_dict)
+                    
+    except Exception as e:
+        flash(f"خطا در بارگذاری کوئری‌های ارسالی: {e}", "danger")
+        result_rows = []
+    
+    return render_template("teacher_queries.html", 
+                         queries=result_rows, 
+                         majors=MAJORS,
+                         selected_major=major)
+
+
+@app.route("/send_to_teacher", methods=["POST"])
+def send_to_teacher():
+    if "student_id" not in session:
+        flash("ابتدا وارد شوید.", "warning")
+        return redirect(url_for("login"))
+    
+    query = request.form.get("query")
+    output_json = request.form.get("output")
+    
+    try:
+        output = json.loads(output_json) if output_json else None
+    except:
+        output = None
+    
+    # ذخیره اطلاعات ارسال در دیتابیس
+    try:
+        with engine.begin() as conn:
+            conn.execute(
+                text("""
+                    INSERT INTO teacher_queries 
+                    (student_id, student_name, major, query, output, submission_time)
+                    VALUES (:student_id, :student_name, :major, :query, :output, CURRENT_TIMESTAMP)
+                """),
+                {
+                    "student_id": session["student_id"],
+                    "student_name": session["name"],
+                    "major": session["major"],
+                    "query": query,
+                    "output": json.dumps(output) if output else None
+                }
+            )
+        
+        flash('کوئری با موفقیت برای مدرس ارسال شد.', 'success')
+    except Exception as e:
+        app.logger.error(f"Error saving query: {e}")
+        flash('خطا در ارسال کوئری برای مدرس.', 'danger')
+    
+    return redirect(url_for('run_test_query'))
+
+
+
 @app.route("/test_date")
 def test_date():
     """صفحه تست برای نمایش تبدیل تاریخ"""
