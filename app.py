@@ -379,19 +379,32 @@ def run_test_query():
 
     output = None
     query_text = ""
+    error = None
 
     if request.method == "POST":
+        # بررسی اگر دکمه ارسال به مدرس زده شده
+        if "send_to_teacher" in request.form:
+            query_text = request.form.get("query", "").strip()
+            output_json = request.form.get("output", "")
+            
+            # ذخیره اطلاعات در session برای استفاده در مسیر send_to_teacher
+            session["teacher_query"] = query_text
+            session["teacher_output"] = output_json
+            
+            return redirect(url_for("send_to_teacher"))
+        
+        # اجرای کوئری معمولی
         query_text = request.form.get("query", "").strip()
 
         # فقط SELECT مجاز است
         if not query_text.lower().startswith("select"):
-            flash("فقط دستورات SELECT مجاز است.", "danger")
-            return redirect(url_for("run_test_query"))
+            error = "فقط دستورات SELECT مجاز است."
+            return render_template("test_sql_runner.html", error=error, query=query_text)
 
         # مطمئن شو فقط روی جدول test اجرا میشه
         if "test" not in query_text.lower():
-            flash("تنها جدول 'test' قابل استفاده است.", "danger")
-            return redirect(url_for("run_test_query"))
+            error = "تنها جدول 'test' قابل استفاده است."
+            return render_template("test_sql_runner.html", error=error, query=query_text)
 
         try:
             with engine.begin() as conn:
@@ -400,10 +413,9 @@ def run_test_query():
                 rows = result.fetchall()
                 output = {"columns": columns, "rows": rows}
         except Exception as e:
-            flash(f"خطا در اجرای SQL: {e}", "danger")
+            error = f"خطا در اجرای SQL: {e}"
 
-    return render_template("test_sql_runner.html", output=output, query=query_text)
-
+    return render_template("test_sql_runner.html", output=output, query=query_text, error=error)
 # ==================== روت‌های ادمین ====================
 
 
