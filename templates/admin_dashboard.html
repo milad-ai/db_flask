@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html dir="rtl" lang="fa">
 <head>
@@ -89,7 +90,6 @@
                         <i class="bi bi-list-check me-2"></i>
                         ارسال‌ها
                     </a>
-
                     <a class="nav-link" href="{{ url_for('admin_manage_users') }}">
                         <i class="bi bi-people me-2"></i>
                         مدیریت کاربران
@@ -97,6 +97,11 @@
                     <a class="nav-link" href="{{ url_for('admin_teacher_queries') }}">
                         <i class="bi bi-code-square me-2"></i>
                         کوئری‌های ارسالی
+                    </a>
+                    <!-- لینک جدید برای مدیریت جدول‌های مجاز -->
+                    <a class="nav-link" href="{{ url_for('admin_allowed_tables') }}">
+                        <i class="bi bi-table me-2"></i>
+                        جدول‌های مجاز
                     </a>
                     <hr class="my-2">
                     <a class="nav-link" href="{{ url_for('admin_logout') }}">
@@ -153,14 +158,15 @@
                             </a>
                         </div>
                     </div>
-  <div class="col-md-6 col-lg-3">
+
+                    <div class="col-md-6 col-lg-3">
                         <div class="dashboard-card text-center">
-                            <div class="card-icon text-success">
+                            <div class="card-icon text-info">
                                 <i class="bi bi-code-square"></i>
                             </div>
                             <h5>کوئری‌های ارسالی</h5>
                             <p class="text-muted">مشاهده کوئری‌های ارسالی دانشجویان</p>
-                            <a href="{{ url_for('admin_teacher_queries') }}" class="btn btn-success w-100">
+                            <a href="{{ url_for('admin_teacher_queries') }}" class="btn btn-info w-100 text-white">
                                 <i class="bi bi-arrow-left me-1"></i>
                                 ورود
                             </a>
@@ -175,6 +181,21 @@
                             <h5>مدیریت کاربران</h5>
                             <p class="text-muted">مدیریت حساب‌های کاربری دانشجویان</p>
                             <a href="{{ url_for('admin_manage_users') }}" class="btn btn-warning w-100 text-white">
+                                <i class="bi bi-arrow-left me-1"></i>
+                                ورود
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- کارت جدید برای مدیریت جدول‌های مجاز -->
+                    <div class="col-md-6 col-lg-3">
+                        <div class="dashboard-card text-center">
+                            <div class="card-icon text-secondary">
+                                <i class="bi bi-table"></i>
+                            </div>
+                            <h5>جدول‌های مجاز</h5>
+                            <p class="text-muted">مدیریت جدول‌های قابل دسترسی دانشجویان</p>
+                            <a href="{{ url_for('admin_allowed_tables') }}" class="btn btn-secondary w-100">
                                 <i class="bi bi-arrow-left me-1"></i>
                                 ورود
                             </a>
