@@ -529,7 +529,78 @@ def admin_logout():
     session.pop("admin_logged_in", None)
     flash("خروج از پنل ادمین موفقیت‌آمیز بود.", "success")
     return redirect(url_for("admin_login"))
+@app.route("/admin/manage_users", methods=["GET", "POST"])
+def admin_manage_users():
+    if not session.get("admin_logged_in"):
+        flash("لطفاً به عنوان مدرس وارد شوید.", "warning")
+        return redirect(url_for("admin_login"))
+    
+    if request.method == "POST":
+        student_id = request.form.get("student_id")
+        new_password = request.form.get("new_password")
+        
+        if not student_id or not new_password:
+            flash("لطفاً همه فیلدها را پر کنید.", "danger")
+            return redirect(url_for("admin_manage_users"))
+        
+        try:
+            with engine.begin() as conn:
+                # بررسی وجود دانشجو
+                student = conn.execute(
+                    text("SELECT student_id, name FROM stuid WHERE student_id = :student_id"),
+                    {"student_id": student_id}
+                ).fetchone()
+                
+                if not student:
+                    flash("دانشجو با این شماره دانشجویی یافت نشد.", "danger")
+                    return redirect(url_for("admin_manage_users"))
+                
+                # تغییر رمز عبور
+                conn.execute(
+                    text("UPDATE stuid SET pass = :password WHERE student_id = :student_id"),
+                    {"password": new_password, "student_id": student_id}
+                )
+                
+                flash(f"رمز عبور دانشجو {student[1]} با موفقیت تغییر یافت.", "success")
+                
+        except Exception as e:
+            flash(f"خطا در تغییر رمز عبور: {str(e)}", "danger")
+    
+    # دریافت لیست کاربران
+    try:
+        with engine.begin() as conn:
+            users = conn.execute(
+                text("SELECT student_id, name, major, email FROM stuid ORDER BY student_id")
+            ).fetchall()
+    except Exception as e:
+        flash(f"خطا در دریافت لیست کاربران: {str(e)}", "danger")
+        users = []
+    
+    return render_template("admin_manage_users.html", users=users)
 
+@app.route("/admin/delete_user/<student_id>")
+def admin_delete_user(student_id):
+    if not session.get("admin_logged_in"):
+        flash("لطفاً به عنوان مدرس وارد شوید.", "warning")
+        return redirect(url_for("admin_login"))
+    
+    try:
+        with engine.begin() as conn:
+            # حذف کاربر
+            result = conn.execute(
+                text("DELETE FROM stuid WHERE student_id = :student_id"),
+                {"student_id": student_id}
+            )
+            
+            if result.rowcount > 0:
+                flash("کاربر با موفقیت حذف شد.", "success")
+            else:
+                flash("کاربر یافت نشد.", "warning")
+                
+    except Exception as e:
+        flash(f"خطا در حذف کاربر: {str(e)}", "danger")
+    
+    return redirect(url_for("admin_manage_users"))
 
 
 @app.route("/test_date")
