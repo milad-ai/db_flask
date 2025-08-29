@@ -54,15 +54,15 @@
                     <tbody>
                         {% for table in tables %}
                         <tr>
-                            <td>{{ table[1] }}</td>  <!-- table_name -->
-                            <td>{{ table[2] or '-' }}</td>  <!-- description -->
+                            <td>{{ table[1] }}</td>
+                            <td>{{ table[2] if table[2] else '-' }}</td>
                             <td>
                                 {% if table[3] %}
-                                    {{ format_datetime_fa(table[3]) }}
+                                    {{ table[3]|string }}  <!-- ابتدا بدون format نمایش می‌دهیم -->
                                 {% else %}
                                     نامشخص
                                 {% endif %}
-                            </td>  <!-- created_at -->
+                            </td>
                             <td>
                                 <a href="{{ url_for('admin_delete_table', table_id=table[0]) }}" 
                                    class="btn btn-danger btn-sm" 
