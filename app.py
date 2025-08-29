@@ -7,7 +7,7 @@ import pytz
 import jdatetime
 from flask import Flask, render_template, request, redirect, url_for, flash, session
 from sqlalchemy import create_engine, text
-
+import json
 # ==================== تنظیمات ====================
 DB_URI = os.environ.get("DB_URI", "sqlite:///./local_test.db")
 engine = create_engine(DB_URI, pool_pre_ping=True)
