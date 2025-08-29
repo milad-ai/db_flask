@@ -615,10 +615,10 @@ def admin_teacher_queries():
     
     try:
         with engine.begin() as conn:
-            # ایجاد جدول اگر وجود ندارد
+            # ایجاد جدول اگر وجود ندارد (با syntax مناسب PostgreSQL)
             conn.execute(text("""
                 CREATE TABLE IF NOT EXISTS teacher_queries (
-                    id INTEGER PRIMARY KEY AUTOINCREMENT,
+                    id SERIAL PRIMARY KEY,
                     student_id TEXT NOT NULL,
                     student_name TEXT NOT NULL,
                     major TEXT NOT NULL,
@@ -670,7 +670,7 @@ def admin_teacher_queries():
                          majors=MAJORS,
                          selected_major=major)
 
-
+# مسیر ارسال کوئری برای مدرس
 @app.route("/send_to_teacher", methods=["POST"])
 def send_to_teacher():
     if "student_id" not in session:
@@ -688,11 +688,25 @@ def send_to_teacher():
     # ذخیره اطلاعات ارسال در دیتابیس
     try:
         with engine.begin() as conn:
+            # ایجاد جدول اگر وجود ندارد (با syntax مناسب PostgreSQL)
+            conn.execute(text("""
+                CREATE TABLE IF NOT EXISTS teacher_queries (
+                    id SERIAL PRIMARY KEY,
+                    student_id TEXT NOT NULL,
+                    student_name TEXT NOT NULL,
+                    major TEXT NOT NULL,
+                    query TEXT NOT NULL,
+                    output TEXT,
+                    submission_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            """))
+            
+            # درج داده
             conn.execute(
                 text("""
                     INSERT INTO teacher_queries 
-                    (student_id, student_name, major, query, output, submission_time)
-                    VALUES (:student_id, :student_name, :major, :query, :output, CURRENT_TIMESTAMP)
+                    (student_id, student_name, major, query, output)
+                    VALUES (:student_id, :student_name, :major, :query, :output)
                 """),
                 {
                     "student_id": session["student_id"],
@@ -709,7 +723,6 @@ def send_to_teacher():
         flash('خطا در ارسال کوئری برای مدرس.', 'danger')
     
     return redirect(url_for('run_test_query'))
-
 
 
 @app.route("/test_date")
