@@ -1,19 +1,23 @@
-
 {% extends "base.html" %}
 {% block content %}
 <div class="container mt-4" style="direction: ltr;">
     <!-- Header ساده با انیمیشن موشک -->
     <div class="header-section text-center mb-4">
         <div class="rocket-icon">🚀</div>
-<h4 class="mb-3" dir="ltr">   تمرین روی جدول آزمایشی </h4>
+        <h4 class="mb-3" dir="ltr">تمرین روی جدول آزمایشی</h4>
     </div>
 
     <form method="POST">
         <div class="mb-3">
             <textarea name="query" class="form-control query-box" rows="4" placeholder="مثال: SELECT * FROM test;" required>{{ query or '' }}</textarea>
         </div>
-        <button type="submit" class="btn btn-primary">اجرای کوئری</button>
+        <button type="submit" name="execute" class="btn btn-primary">اجرای کوئری</button>
         <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">بازگشت به داشبورد</a>
+        
+        <!-- دکمه ارسال به مدرس فقط بعد از اجرای موفق کوئری نمایش داده شود -->
+        {% if output and not error %}
+        <button type="submit" name="send_to_teacher" class="btn btn-success">ارسال به مدرس</button>
+        {% endif %}
     </form>
 
     {% if output or error %}
