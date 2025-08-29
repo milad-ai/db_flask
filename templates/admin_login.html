@@ -1,70 +1,141 @@
-
 <!DOCTYPE html>
 <html dir="rtl" lang="fa">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ورود ادمین - سیستم ارسال تمرین</title>
+    <title>ورود مدرس - سیستم هکری</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
     <style>
         body {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: #0d1117;
             min-height: 100vh;
             display: flex;
             align-items: center;
-            font-family: 'Vazir', 'Tanha', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            justify-content: center;
+            font-family: 'Courier New', monospace;
+            overflow: hidden;
+            position: relative;
+        }
+        /* افکت پس‌زمینه ماتریکس */
+        .matrix-bg {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(180deg, rgba(0, 0, 0, 0.8), rgba(0, 255, 128, 0.1));
+            z-index: -1;
+            animation: matrix 20s linear infinite;
+        }
+        @keyframes matrix {
+            0% { background-position: 0 0; }
+            100% { background-position: 0 100%; }
+        }
+        .matrix-bg::before {
+            content: '';
+            position: absolute;
+            width: 100%;
+            height: 200%;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"><text x="0" y="15" font-family="Courier New" font-size="14" fill="#00ff00" opacity="0.1">101010100101010010101010101001010101001010101010010101010101001010101001010101010</text></svg>') repeat;
+            animation: matrix-fall 10s linear infinite;
+        }
+        @keyframes matrix-fall {
+            0% { transform: translateY(-100%); }
+            100% { transform: translateY(0); }
         }
         .login-card {
-            background: white;
-            border-radius: 15px;
-            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.1);
+            background: rgba(10, 10, 10, 0.9);
+            border: 1px solid #00ff00;
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(0, 255, 128, 0.5);
             overflow: hidden;
+            width: 100%;
+            max-width: 450px;
+            backdrop-filter: blur(5px);
         }
         .login-header {
-            background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
-            color: white;
-            padding: 2rem;
+            background: none;
+            color: #00ff00;
+            padding: 1.5rem;
             text-align: center;
+            border-bottom: 1px solid #00ff00;
+            animation: neon-glow 2s ease-in-out infinite;
+        }
+        @keyframes neon-glow {
+            0%, 100% { text-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00, 0 0 20px #00ff00; }
+            50% { text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 30px #00ff00; }
         }
         .login-body {
-            padding: 2rem;
+            padding: 1.5rem;
         }
         .form-control {
-            border-radius: 8px;
-            padding: 12px;
-            border: 2px solid #e3e6f0;
+            background: #1a1e23;
+            border: 1px solid #00ff00;
+            color: #00ff00;
+            border-radius: 6px;
+            padding: 10px;
+            font-family: 'Courier New', monospace;
             transition: all 0.3s;
         }
         .form-control:focus {
-            border-color: #4e73df;
-            box-shadow: 0 0 0 0.2rem rgba(78, 115, 223, 0.25);
+            border-color: #00cc00;
+            box-shadow: 0 0 10px rgba(0, 255, 128, 0.5);
+            background: #222831;
+        }
+        .form-control::placeholder {
+            color: #00cc00;
+            opacity: 0.7;
+        }
+        .input-group-text {
+            background: #1a1e23;
+            border: 1px solid #00ff00;
+            color: #00ff00;
         }
         .btn-login {
-            background: linear-gradient(135deg, #4e73df 0%, #224abe 100%);
+            background: #00ff00;
             border: none;
-            padding: 12px;
-            border-radius: 8px;
+            padding: 10px;
+            border-radius: 6px;
+            color: #0d1117;
             font-weight: 600;
+            font-family: 'Courier New', monospace;
             transition: all 0.3s;
         }
         .btn-login:hover {
+            background: #00cc00;
+            box-shadow: 0 0 15px rgba(0, 255, 128, 0.7);
             transform: translateY(-2px);
-            box-shadow: 0 4px 15px rgba(78, 115, 223, 0.4);
+        }
+        .alert {
+            background: rgba(255, 0, 0, 0.2);
+            border: 1px solid #ff0000;
+            color: #ff0000;
+            border-radius: 6px;
+            margin-bottom: 1rem;
+        }
+        .alert-success {
+            background: rgba(0, 255, 0, 0.2);
+            border: 1px solid #00ff00;
+            color: #00ff00;
+        }
+        h3, p {
+            margin: 0;
         }
     </style>
 </head>
 <body>
+    <div class="matrix-bg"></div>
     <div class="container">
         <div class="row justify-content-center">
             <div class="col-md-6 col-lg-5">
                 <div class="login-card">
                     <div class="login-header">
-                        <h3 class="mb-3">
+                        <h3 class="mb-2">
                             <i class="bi bi-shield-lock me-2"></i>
-                            ورود به پنل ادمین
+                            ورود به سیستم 
                         </h3>
-                        <p class="mb-0">سیستم مدیریت ارسال تمرین‌های دانشجویان</p>
+                        <p>مدیریت تمرین‌های دانشجویان</p>
                     </div>
                     <div class="login-body">
                         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -81,26 +152,26 @@
                         
                         <form method="POST">
                             <div class="mb-3">
-                                <label class="form-label fw-bold">نام کاربری</label>
+                                <label class="form-label fw-bold text-light">نام کاربری</label>
                                 <div class="input-group">
                                     <span class="input-group-text">
                                         <i class="bi bi-person"></i>
                                     </span>
-                                    <input type="text" name="username" class="form-control" placeholder="نام کاربری خود را وارد کنید" required>
+                                    <input type="text" name="username" class="form-control" placeholder="> نام کاربری" required>
                                 </div>
                             </div>
-                            <div class="mb-4">
-                                <label class="form-label fw-bold">رمز عبور</label>
+                            <div class="mb-3">
+                                <label class="form-label fw-bold text-light">رمز عبور</label>
                                 <div class="input-group">
                                     <span class="input-group-text">
                                         <i class="bi bi-key"></i>
                                     </span>
-                                    <input type="password" name="password" class="form-control" placeholder="رمز عبور خود را وارد کنید" required>
+                                    <input type="password" name="password" class="form-control" placeholder="> رمز عبور" required>
                                 </div>
                             </div>
                             <button type="submit" class="btn btn-login w-100">
                                 <i class="bi bi-box-arrow-in-right me-2"></i>
-                                ورود به سیستم
+                                دسترسی به سیستم
                             </button>
                         </form>
                     </div>
@@ -110,5 +181,18 @@
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-</body>
-</html>
+    <script>
+        // افکت تایپینگ برای عنوان
+        const title = document.querySelector('.login-header h3');
+        const text = title.textContent;
+        title.textContent = '';
+        let i = 0;
+        function typeEffect() {
+            if (i < text.length) {
+                title.textContent += text.charAt(i);
+                i++;
+                setTimeout(typeEffect, 100);
+            }
+        }
+        document.addEventListener('DOMContentLoaded', typeEffect);
+    </script>
