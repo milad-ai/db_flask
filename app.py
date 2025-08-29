@@ -371,38 +371,6 @@ def change_password():
 
     return render_template("change_password.html")
 
-@app.route("/run_test_query", methods=["GET", "POST"])
-def run_test_query():
-    if "student_id" not in session:
-        flash("ابتدا وارد شوید.", "warning")
-        return redirect(url_for("login"))
-
-    output = None
-    query_text = ""
-
-    if request.method == "POST":
-        query_text = request.form.get("query", "").strip()
-
-        # فقط SELECT مجاز است
-        if not query_text.lower().startswith("select"):
-            flash("فقط دستورات SELECT مجاز است.", "danger")
-            return redirect(url_for("run_test_query"))
-
-        # مطمئن شو فقط روی جدول test اجرا میشه
-        if "test" not in query_text.lower():
-            flash("تنها جدول 'test' قابل استفاده است.", "danger")
-            return redirect(url_for("run_test_query"))
-
-        try:
-            with engine.begin() as conn:
-                result = conn.execute(text(query_text))
-                columns = result.keys()
-                rows = result.fetchall()
-                output = {"columns": columns, "rows": rows}
-        except Exception as e:
-            flash(f"خطا در اجرای SQL: {e}", "danger")
-
-    return render_template("test_sql_runner.html", output=output, query=query_text)
 
 # ==================== روت‌های ادمین ====================
 
@@ -669,6 +637,53 @@ def admin_teacher_queries():
                          queries=result_rows, 
                          majors=MAJORS,
                          selected_major=major)
+@app.route("/run_test_query", methods=["GET", "POST"])
+def run_test_query():
+    if "student_id" not in session:
+        flash("ابتدا وارد شوید.", "warning")
+        return redirect(url_for("login"))
+
+    output = None
+    query_text = ""
+    error = None
+
+    if request.method == "POST":
+        # بررسی اگر دکمه ارسال به مدرس زده شده
+        if "send_to_teacher" in request.form:
+            # استفاده از اطلاعاتی که قبلاً در session ذخیره شده
+            return redirect(url_for("send_to_teacher"))
+        
+        # اجرای کوئری معمولی
+        query_text = request.form.get("query", "").strip()
+
+        # فقط SELECT مجاز است
+        if not query_text.lower().startswith("select"):
+            error = "فقط دستورات SELECT مجاز است."
+            return render_template("test_sql_runner.html", error=error, query=query_text)
+
+        # مطمئن شو فقط روی جدول test اجرا میشه
+        if "test" not in query_text.lower():
+            error = "تنها جدول 'test' قابل استفاده است."
+            return render_template("test_sql_runner.html", error=error, query=query_text)
+
+        try:
+            with engine.begin() as conn:
+                result = conn.execute(text(query_text))
+                columns = result.keys()
+                rows = result.fetchall()
+                output = {"columns": columns, "rows": rows}
+                
+                # ذخیره کوئری و خروجی در session برای استفاده در ارسال به مدرس
+                session["teacher_query"] = query_text
+                session["teacher_output"] = json.dumps({
+                    "columns": columns,
+                    "rows": [list(row) for row in rows]  # تبدیل tuple به list برای JSON
+                })
+                
+        except Exception as e:
+            error = f"خطا در اجرای SQL: {e}"
+
+    return render_template("test_sql_runner.html", output=output, query=query_text, error=error)
 
 @app.route("/send_to_teacher", methods=["GET"])
 def send_to_teacher():
@@ -727,6 +742,8 @@ def send_to_teacher():
         flash('خطا در ارسال کوئری برای مدرس.', 'danger')
     
     return redirect(url_for('run_test_query'))
+
+
 
 @app.route("/test_date")
 def test_date():
