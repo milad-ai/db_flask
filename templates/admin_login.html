@@ -1,200 +1,203 @@
-
 <!DOCTYPE html>
 <html dir="rtl" lang="fa">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ورود مدرس -  </title>
+    <title>ورود مدرس - سامانه مدیریت آموزشی</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@300;400;500;600&display=swap');
+        
         body {
-            background: #0d1117;
+            background-color: #f8f9fa;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            font-family: 'Courier New', monospace;
-            overflow: hidden;
-            position: relative;
+            font-family: 'Vazirmatn', sans-serif;
+            padding: 20px;
         }
-        /* افکت پس‌زمینه ماتریکس */
-        .matrix-bg {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(180deg, rgba(0, 0, 0, 0.8), rgba(0, 255, 128, 0.1));
-            z-index: -1;
-            animation: matrix 20s linear infinite;
-        }
-        @keyframes matrix {
-            0% { background-position: 0 0; }
-            100% { background-position: 0 100%; }
-        }
-        .matrix-bg::before {
-            content: '';
-            position: absolute;
-            width: 100%;
-            height: 200%;
-            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg"><text x="0" y="15" font-family="Courier New" font-size="14" fill="#00ff00" opacity="0.1">101010100101010010101010101001010101001010101010010101010101001010101001010101010</text></svg>') repeat;
-            animation: matrix-fall 10s linear infinite;
-        }
-        @keyframes matrix-fall {
-            0% { transform: translateY(-100%); }
-            100% { transform: translateY(0); }
-        }
-        .login-card {
-            background: rgba(10, 10, 10, 0.9);
-            border: 1px solid #00ff00;
-            border-radius: 10px;
-            box-shadow: 0 0 20px rgba(0, 255, 128, 0.5);
-            overflow: hidden;
-            width: 100%;
+        
+        .login-container {
             max-width: 450px;
-            backdrop-filter: blur(5px);
+            width: 100%;
+            transition: all 0.3s ease;
         }
+        
+        .login-card {
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+            transition: all 0.3s ease;
+        }
+        
+        .login-card:hover {
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.12);
+            transform: translateY(-5px);
+        }
+        
         .login-header {
-            background: none;
-            color: #00ff00;
-            padding: 1.5rem;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+            color: white;
+            padding: 2rem 1.5rem;
             text-align: center;
-            border-bottom: 1px solid #00ff00;
-            animation: neon-glow 2s ease-in-out infinite;
         }
-        @keyframes neon-glow {
-            0%, 100% { text-shadow: 0 0 5px #00ff00, 0 0 10px #00ff00, 0 0 20px #00ff00; }
-            50% { text-shadow: 0 0 10px #00ff00, 0 0 20px #00ff00, 0 0 30px #00ff00; }
-        }
+        
         .login-body {
-            padding: 1.5rem;
+            padding: 2rem 1.5rem;
         }
+        
         .form-control {
-            background: #1a1e23;
-            border: 1px solid #00ff00;
-            color: #00ff00;
-            border-radius: 6px;
-            padding: 10px;
-            font-family: 'Courier New', monospace;
+            border-radius: 10px;
+            padding: 12px 20px;
+            border: 1px solid #e2e8f0;
             transition: all 0.3s;
+            font-family: 'Vazirmatn', sans-serif;
         }
+        
         .form-control:focus {
-            border-color: #00cc00;
-            box-shadow: 0 0 10px rgba(0, 255, 128, 0.5);
-            background: #222831;
+            border-color: #4d90fe;
+            box-shadow: 0 0 0 2px rgba(77, 144, 254, 0.2);
         }
-        .form-control::placeholder {
-            color: #00cc00;
-            opacity: 0.7;
-        }
+        
         .input-group-text {
-            background: #1a1e23;
-            border: 1px solid #00ff00;
-            color: #00ff00;
+            background: #f8f9fa;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px 0 0 10px;
         }
+        
         .btn-login {
-            background: #00ff00;
+            background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
             border: none;
-            padding: 10px;
-            border-radius: 6px;
-            color: #0d1117;
-            font-weight: 600;
-            font-family: 'Courier New', monospace;
+            padding: 12px;
+            border-radius: 10px;
+            color: white;
+            font-weight: 500;
+            font-family: 'Vazirmatn', sans-serif;
             transition: all 0.3s;
         }
+        
         .btn-login:hover {
-            background: #00cc00;
-            box-shadow: 0 0 15px rgba(0, 255, 128, 0.7);
+            background: linear-gradient(135deg, #580fb3 0%, #1c68f5 100%);
             transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(37, 117, 252, 0.3);
         }
+        
+        .form-label {
+            font-weight: 500;
+            margin-bottom: 8px;
+            color: #2d3748;
+        }
+        
         .alert {
-            background: rgba(255, 0, 0, 0.2);
-            border: 1px solid #ff0000;
-            color: #ff0000;
-            border-radius: 6px;
-            margin-bottom: 1rem;
+            border-radius: 10px;
+            margin-bottom: 1.5rem;
         }
-        .alert-success {
-            background: rgba(0, 255, 0, 0.2);
-            border: 1px solid #00ff00;
-            color: #00ff00;
+        
+        .logo {
+            font-size: 28px;
+            font-weight: 700;
+            margin-bottom: 10px;
         }
-        h3, p {
-            margin: 0;
+        
+        .subtitle {
+            opacity: 0.9;
+            font-size: 0.95rem;
+        }
+        
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 1.5rem 0;
+            color: #a0aec0;
+        }
+        
+        .divider::before,
+        .divider::after {
+            content: "";
+            flex: 1;
+            height: 1px;
+            background-color: #e2e8f0;
+        }
+        
+        .divider::before {
+            margin-left: 10px;
+        }
+        
+        .divider::after {
+            margin-right: 10px;
+        }
+        
+        .copyright {
+            text-align: center;
+            margin-top: 2rem;
+            color: #a0aec0;
+            font-size: 0.85rem;
         }
     </style>
 </head>
 <body>
-    <div class="matrix-bg"></div>
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-6 col-lg-5">
-                <div class="login-card">
-                    <div class="login-header">
-                        <h3 class="mb-2">
-                            <i class="bi bi-shield-lock me-2"></i>
-                            ورود به سیستم 
-                        </h3>
-                        <p>مدیریت تمرین‌های دانشجویان</p>
-                    </div>
-                    <div class="login-body">
-                        {% with messages = get_flashed_messages(with_categories=true) %}
-                            {% if messages %}
-                                {% for category, message in messages %}
-                                    <div class="alert alert-{{ category }} alert-dismissible fade show">
-                                        <i class="bi bi-{% if category == 'success' %}check-circle{% else %}exclamation-triangle{% endif %} me-2"></i>
-                                        {{ message }}
-                                        <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                                    </div>
-                                {% endfor %}
-                            {% endif %}
-                        {% endwith %}
-                        
-                        <form method="POST">
-                            <div class="mb-3">
-                                <label class="form-label fw-bold text-light">نام کاربری</label>
-                                <div class="input-group">
-                                    <span class="input-group-text">
-                                        <i class="bi bi-person"></i>
-                                    </span>
-                                    <input type="text" name="username" class="form-control" placeholder="> نام کاربری" required>
-                                </div>
-                            </div>
-                            <div class="mb-3">
-                                <label class="form-label fw-bold text-light">رمز عبور</label>
-                                <div class="input-group">
-                                    <span class="input-group-text">
-                                        <i class="bi bi-key"></i>
-                                    </span>
-                                    <input type="password" name="password" class="form-control" placeholder="> رمز عبور" required>
-                                </div>
-                            </div>
-                            <button type="submit" class="btn btn-login w-100">
-                                <i class="bi bi-box-arrow-in-right me-2"></i>
-                                دسترسی به سیستم
-                            </button>
-                        </form>
-                    </div>
+    <div class="login-container">
+        <div class="login-card">
+            <div class="login-header">
+                <div class="logo">
+                    <i class="bi bi-mortarboard-fill me-2"></i>
+                    سامانه مدرسین
                 </div>
+                <p class="subtitle mb-0">مدیریت تمرین‌ها و ارزیابی دانشجویان</p>
             </div>
+            <div class="login-body">
+                {% with messages = get_flashed_messages(with_categories=true) %}
+                    {% if messages %}
+                        {% for category, message in messages %}
+                            <div class="alert alert-{{ category }} alert-dismissible fade show">
+                                <i class="bi bi-{% if category == 'success' %}check-circle{% else %}exclamation-triangle{% endif %} me-2"></i>
+                                {{ message }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                            </div>
+                        {% endfor %}
+                    {% endif %}
+                {% endwith %}
+                
+                <form method="POST">
+                    <div class="mb-3">
+                        <label class="form-label">نام کاربری</label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="bi bi-person"></i>
+                            </span>
+                            <input type="text" name="username" class="form-control" placeholder="نام کاربری خود را وارد کنید" required>
+                        </div>
+                    </div>
+                    <div class="mb-4">
+                        <label class="form-label">رمز عبور</label>
+                        <div class="input-group">
+                            <span class="input-group-text">
+                                <i class="bi bi-key"></i>
+                            </span>
+                            <input type="password" name="password" class="form-control" placeholder="رمز عبور خود را وارد کنید" required>
+                        </div>
+                    </div>
+                    <button type="submit" class="btn btn-login w-100 mb-3">
+                        <i class="bi bi-box-arrow-in-left me-2"></i>
+                        ورود به پنل مدیریت
+                    </button>
+                    
+                    <div class="divider">یا</div>
+                    
+                    <div class="text-center">
+                        <a href="#" class="text-decoration-none text-primary">رمز عبور خود را فراموش کرده‌اید؟</a>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div class="copyright">
+            © ۲۰۲۳ - سامانه مدیریت آموزشی دانشگاه
         </div>
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-        // افکت تایپینگ برای عنوان
-        const title = document.querySelector('.login-header h3');
-        const text = title.textContent;
-        title.textContent = '';
-        let i = 0;
-        function typeEffect() {
-            if (i < text.length) {
-                title.textContent += text.charAt(i);
-                i++;
-                setTimeout(typeEffect, 100);
-            }
-        }
-        document.addEventListener('DOMContentLoaded', typeEffect);
-    </script>
-
+</body>
+</html>
