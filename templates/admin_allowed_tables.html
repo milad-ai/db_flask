@@ -56,7 +56,13 @@
                         <tr>
                             <td>{{ table.table_name }}</td>
                             <td>{{ table.description or '-' }}</td>
-                            <td>{{ format_datetime_fa(table.created_at) if table.created_at else 'نامشخص' }}</td>
+                            <td>
+                                {% if table.created_at %}
+                                    {{ format_datetime_fa(table.created_at) }}
+                                {% else %}
+                                    نامشخص
+                                {% endif %}
+                            </td>
                             <td>
                                 <a href="{{ url_for('admin_delete_table', table_id=table.id) }}" 
                                    class="btn btn-danger btn-sm" 
