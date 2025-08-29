@@ -636,18 +636,25 @@ def admin_teacher_queries():
 # ==================== روت‌های مدیریت جدول‌های مجاز برای ادمین ====================
 # ==================== روت‌های مدیریت جدول‌های مجاز برای ادمین ====================
 
+# ==================== روت‌های مدیریت جدول‌های مجاز برای ادمین ====================
+
 @app.route("/admin/allowed_tables", methods=["GET", "POST"])
 def admin_allowed_tables():
     if not session.get("admin_logged_in"):
         flash("لطفاً به عنوان ادمین وارد شوید.", "warning")
         return redirect(url_for("admin_login"))
     
+    app.logger.info("Entering admin_allowed_tables route")
     tables = []
     
     try:
+        app.logger.info("Attempting to connect to database...")
         with engine.begin() as conn:
+            app.logger.info("Database connection successful")
+            
             # ایجاد جدول اگر وجود ندارد
             try:
+                app.logger.info("Creating table if not exists...")
                 conn.execute(text("""
                     CREATE TABLE IF NOT EXISTS allowed_tables (
                         id SERIAL PRIMARY KEY,
@@ -656,20 +663,31 @@ def admin_allowed_tables():
                         created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
                     )
                 """))
-            except:
-                pass  # اگر جدول وجود دارد، خطا نده
+                app.logger.info("Table creation/check completed")
+            except Exception as create_error:
+                app.logger.error(f"Error creating table: {str(create_error)}")
+                flash(f"خطا در ایجاد جدول: {str(create_error)}", "danger")
+                return redirect(url_for("admin_dashboard"))
             
             # دریافت داده‌ها
-            result = conn.execute(
-                text("SELECT id, table_name, description, created_at FROM allowed_tables ORDER BY table_name")
-            )
-            tables = result.fetchall()
+            try:
+                app.logger.info("Fetching data from allowed_tables...")
+                result = conn.execute(
+                    text("SELECT id, table_name, description, created_at FROM allowed_tables ORDER BY table_name")
+                )
+                tables = result.fetchall()
+                app.logger.info(f"Found {len(tables)} tables in database")
+            except Exception as select_error:
+                app.logger.error(f"Error selecting data: {str(select_error)}")
+                flash(f"خطا در دریافت داده‌ها: {str(select_error)}", "danger")
             
     except Exception as e:
-        flash(f"خطا در دریافت لیست جدول‌ها: {str(e)}", "danger")
+        app.logger.error(f"General error in admin_allowed_tables: {str(e)}")
+        flash(f"خطای عمومی در اتصال به دیتابیس: {str(e)}", "danger")
     
     # پردازش فرم اضافه کردن جدول جدید
     if request.method == "POST":
+        app.logger.info("POST request received for adding table")
         table_name = request.form.get("table_name", "").strip()
         description = request.form.get("description", "").strip()
         
@@ -679,6 +697,7 @@ def admin_allowed_tables():
         
         try:
             with engine.begin() as conn:
+                app.logger.info(f"Attempting to insert table: {table_name}")
                 conn.execute(
                     text("INSERT INTO allowed_tables (table_name, description) VALUES (:table_name, :description)"),
                     {"table_name": table_name, "description": description}
@@ -686,12 +705,14 @@ def admin_allowed_tables():
             flash(f"جدول '{table_name}' با موفقیت اضافه شد.", "success")
             return redirect(url_for("admin_allowed_tables"))
         except Exception as e:
+            app.logger.error(f"Error inserting table: {str(e)}")
             error_msg = str(e)
             if "unique" in error_msg.lower() or "duplicate" in error_msg.lower():
                 flash(f"جدول '{table_name}' قبلاً اضافه شده است.", "warning")
             else:
                 flash(f"خطا در اضافه کردن جدول: {error_msg}", "danger")
     
+    app.logger.info("Rendering template with tables data")
     return render_template("admin_allowed_tables.html", tables=tables)
 
 @app.route("/admin/delete_table/<int:table_id>")
@@ -699,6 +720,8 @@ def admin_delete_table(table_id):
     if not session.get("admin_logged_in"):
         flash("لطفاً به عنوان ادمین وارد شوید.", "warning")
         return redirect(url_for("admin_login"))
+    
+    app.logger.info(f"Attempting to delete table with ID: {table_id}")
     
     try:
         with engine.begin() as conn:
@@ -709,10 +732,13 @@ def admin_delete_table(table_id):
             
             if result.rowcount > 0:
                 flash("جدول با موفقیت حذف شد.", "success")
+                app.logger.info(f"Table {table_id} deleted successfully")
             else:
                 flash("جدول یافت نشد.", "warning")
+                app.logger.warning(f"Table {table_id} not found for deletion")
                 
     except Exception as e:
+        app.logger.error(f"Error deleting table: {str(e)}")
         flash(f"خطا در حذف جدول: {str(e)}", "danger")
     
     return redirect(url_for("admin_allowed_tables"))
@@ -727,10 +753,32 @@ def is_table_allowed(table_name):
                 {"table_name": table_name}
             ).fetchone()
             return result is not None
-    except:
+    except Exception as e:
+        app.logger.error(f"Error checking allowed table {table_name}: {str(e)}")
         return False
 
-
+@app.route("/debug_database")
+def debug_database():
+    try:
+        with engine.begin() as conn:
+            # تست اتصال به دیتابیس
+            test_result = conn.execute(text("SELECT 1")).fetchone()
+            
+            # بررسی وجود جدول allowed_tables
+            tables_exist = conn.execute(text("""
+                SELECT EXISTS (
+                    SELECT FROM information_schema.tables 
+                    WHERE table_name = 'allowed_tables'
+                )
+            """)).fetchone()
+            
+            return f"""
+            Database connection: OK<br>
+            Test query result: {test_result}<br>
+            Table exists: {tables_exist[0] if tables_exist else 'Unknown'}
+            """
+    except Exception as e:
+        return f"Database Error: {str(e)}"
 
 
 
