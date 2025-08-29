@@ -637,6 +637,10 @@ def admin_teacher_queries():
 
 # ==================== روت‌های مدیریت جدول‌های مجاز برای ادمین ====================
 
+
+
+# ==================== روت‌های مدیریت جدول‌های مجاز برای ادمین ====================
+
 @app.route("/admin/allowed_tables", methods=["GET", "POST"])
 def admin_allowed_tables():
     if not session.get("admin_logged_in"):
@@ -656,9 +660,18 @@ def admin_allowed_tables():
                 )
             """))
             
-            tables = conn.execute(
+            # روش صحیح برای PostgreSQL
+            result = conn.execute(
                 text("SELECT id, table_name, description, created_at FROM allowed_tables ORDER BY table_name")
-            ).mappings().fetchall()
+            )
+            tables = []
+            for row in result:
+                tables.append({
+                    'id': row[0],
+                    'table_name': row[1],
+                    'description': row[2],
+                    'created_at': row[3]
+                })
             
     except Exception as e:
         flash(f"خطا در دریافت لیست جدول‌ها: {str(e)}", "danger")
@@ -728,42 +741,27 @@ def is_table_allowed(table_name):
 
 
 
-@app.route("/admin/delete_table/<int:table_id>")
-def admin_delete_table(table_id):
-    if not session.get("admin_logged_in"):
-        flash("لطفاً به عنوان ادمین وارد شوید.", "warning")
-        return redirect(url_for("admin_login"))
-    
-    try:
-        with engine.begin() as conn:
-            result = conn.execute(
-                text("DELETE FROM allowed_tables WHERE id = :table_id"),
-                {"table_id": table_id}
-            )
-            
-            if result.rowcount > 0:
-                flash("جدول با موفقیت حذف شد.", "success")
-            else:
-                flash("جدول یافت نشد.", "warning")
-                
-    except Exception as e:
-        flash(f"خطا در حذف جدول: {str(e)}", "danger")
-    
-    return redirect(url_for("admin_allowed_tables"))
 
-# تابع کمکی برای بررسی مجاز بودن جدول
-def is_table_allowed(table_name):
-    """بررسی می‌کند که آیا جدول در لیست جدول‌های مجاز است"""
-    try:
-        with engine.begin() as conn:
-            result = conn.execute(
-                text("SELECT table_name FROM allowed_tables WHERE table_name = :table_name"),
-                {"table_name": table_name}
-            ).fetchone()
-            return result is not None
-    except Exception as e:
-        app.logger.error(f"Error checking allowed table: {e}")
-        return False
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 # اصلاح تابع run_test_query برای استفاده از جدول‌های مجاز
 @app.route("/run_test_query", methods=["GET", "POST"])
