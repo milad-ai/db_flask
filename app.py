@@ -631,6 +631,97 @@ def admin_teacher_queries():
                          selected_major=major)
 
 
+
+
+# ==================== روت‌های مدیریت جدول‌های مجاز برای ادمین ====================
+
+@app.route("/admin/allowed_tables", methods=["GET", "POST"])
+def admin_allowed_tables():
+    if not session.get("admin_logged_in"):
+        flash("لطفاً به عنوان ادمین وارد شوید.", "warning")
+        return redirect(url_for("admin_login"))
+    
+    # دریافت لیست جدول‌های مجاز
+    try:
+        with engine.begin() as conn:
+            # ایجاد جدول اگر وجود ندارد
+            conn.execute(text("""
+                CREATE TABLE IF NOT EXISTS allowed_tables (
+                    id SERIAL PRIMARY KEY,
+                    table_name TEXT NOT NULL UNIQUE,
+                    description TEXT,
+                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                )
+            """))
+            
+            tables = conn.execute(
+                text("SELECT id, table_name, description, created_at FROM allowed_tables ORDER BY table_name")
+            ).fetchall()
+    except Exception as e:
+        flash(f"خطا در دریافت لیست جدول‌ها: {str(e)}", "danger")
+        tables = []
+    
+    # پردازش فرم اضافه کردن جدول جدید
+    if request.method == "POST":
+        table_name = request.form.get("table_name", "").strip()
+        description = request.form.get("description", "").strip()
+        
+        if not table_name:
+            flash("لطفاً نام جدول را وارد کنید.", "danger")
+            return redirect(url_for("admin_allowed_tables"))
+        
+        try:
+            with engine.begin() as conn:
+                # بررسی وجود جدول
+                conn.execute(
+                    text("INSERT INTO allowed_tables (table_name, description) VALUES (:table_name, :description)"),
+                    {"table_name": table_name, "description": description}
+                )
+            flash(f"جدول '{table_name}' با موفقیت اضافه شد.", "success")
+            return redirect(url_for("admin_allowed_tables"))
+        except Exception as e:
+            flash(f"خطا در اضافه کردن جدول: {str(e)}", "danger")
+    
+    return render_template("admin_allowed_tables.html", tables=tables)
+
+@app.route("/admin/delete_table/<int:table_id>")
+def admin_delete_table(table_id):
+    if not session.get("admin_logged_in"):
+        flash("لطفاً به عنوان ادمین وارد شوید.", "warning")
+        return redirect(url_for("admin_login"))
+    
+    try:
+        with engine.begin() as conn:
+            result = conn.execute(
+                text("DELETE FROM allowed_tables WHERE id = :table_id"),
+                {"table_id": table_id}
+            )
+            
+            if result.rowcount > 0:
+                flash("جدول با موفقیت حذف شد.", "success")
+            else:
+                flash("جدول یافت نشد.", "warning")
+                
+    except Exception as e:
+        flash(f"خطا در حذف جدول: {str(e)}", "danger")
+    
+    return redirect(url_for("admin_allowed_tables"))
+
+# تابع کمکی برای بررسی مجاز بودن جدول
+def is_table_allowed(table_name):
+    """بررسی می‌کند که آیا جدول در لیست جدول‌های مجاز است"""
+    try:
+        with engine.begin() as conn:
+            result = conn.execute(
+                text("SELECT table_name FROM allowed_tables WHERE table_name = :table_name"),
+                {"table_name": table_name}
+            ).fetchone()
+            return result is not None
+    except Exception as e:
+        app.logger.error(f"Error checking allowed table: {e}")
+        return False
+
+# اصلاح تابع run_test_query برای استفاده از جدول‌های مجاز
 @app.route("/run_test_query", methods=["GET", "POST"])
 def run_test_query():
     if "student_id" not in session:
@@ -644,7 +735,6 @@ def run_test_query():
     if request.method == "POST":
         # بررسی اگر دکمه ارسال به مدرس زده شده
         if "send_to_teacher" in request.form:
-            # استفاده از اطلاعاتی که قبلاً در session ذخیره شده
             return redirect(url_for("send_to_teacher"))
         
         # اجرای کوئری معمولی
@@ -655,30 +745,35 @@ def run_test_query():
             error = "فقط دستورات SELECT مجاز است."
             return render_template("test_sql_runner.html", error=error, query=query_text)
 
-        # مطمئن شو فقط روی جدول test اجرا میشه
-        if "test" not in query_text.lower():
-            error = "تنها جدول 'test' قابل استفاده است."
+        # استخراج نام جدول از کوئری
+        table_match = re.search(r'from\s+(\w+)', query_text, re.IGNORECASE)
+        if not table_match:
+            error = "نام جدول در کوئری یافت نشد."
+            return render_template("test_sql_runner.html", error=error, query=query_text)
+        
+        table_name = table_match.group(1)
+        
+        # بررسی مجاز بودن جدول
+        if not is_table_allowed(table_name):
+            error = f"دسترسی به جدول '{table_name}' مجاز نیست."
             return render_template("test_sql_runner.html", error=error, query=query_text)
 
         try:
             with engine.begin() as conn:
                 result = conn.execute(text(query_text))
-                columns = list(result.keys())  # تبدیل به لیست معمولی
+                columns = list(result.keys())
                 rows = result.fetchall()
                 output = {"columns": columns, "rows": rows}
                 
                 # تبدیل ردیف‌ها به فرمت قابل سریال‌سازی
                 serializable_rows = []
                 for row in rows:
-                    # تبدیل هر ردیف به لیست یا دیکشنری
                     if hasattr(row, '_asdict'):
-                        # اگر ردیف می‌تواند به دیکشنری تبدیل شود
                         serializable_rows.append(row._asdict())
                     else:
-                        # در غیر این صورت به لیست تبدیل کنیم
                         serializable_rows.append(list(row))
                 
-                # ذخیره کوئری و خروجی در session برای استفاده در ارسال به مدرس
+                # ذخیره کوئری و خروجی در session
                 session["teacher_query"] = query_text
                 session["teacher_output"] = json.dumps({
                     "columns": columns,
@@ -689,6 +784,14 @@ def run_test_query():
             error = f"خطا در اجرای SQL: {e}"
 
     return render_template("test_sql_runner.html", output=output, query=query_text, error=error)
+
+
+
+
+
+
+
+
 
 
 @app.route("/send_to_teacher", methods=["GET"])
