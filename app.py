@@ -634,11 +634,6 @@ def admin_teacher_queries():
 
 
 # ==================== روت‌های مدیریت جدول‌های مجاز برای ادمین ====================
-
-# ==================== روت‌های مدیریت جدول‌های مجاز برای ادمین ====================
-
-
-
 # ==================== روت‌های مدیریت جدول‌های مجاز برای ادمین ====================
 
 @app.route("/admin/allowed_tables", methods=["GET", "POST"])
@@ -647,35 +642,31 @@ def admin_allowed_tables():
         flash("لطفاً به عنوان ادمین وارد شوید.", "warning")
         return redirect(url_for("admin_login"))
     
-    # دریافت لیست جدول‌های مجاز
+    tables = []
+    
     try:
         with engine.begin() as conn:
             # ایجاد جدول اگر وجود ندارد
-            conn.execute(text("""
-                CREATE TABLE IF NOT EXISTS allowed_tables (
-                    id SERIAL PRIMARY KEY,
-                    table_name TEXT NOT NULL UNIQUE,
-                    description TEXT,
-                    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                )
-            """))
+            try:
+                conn.execute(text("""
+                    CREATE TABLE IF NOT EXISTS allowed_tables (
+                        id SERIAL PRIMARY KEY,
+                        table_name TEXT NOT NULL UNIQUE,
+                        description TEXT,
+                        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+                    )
+                """))
+            except:
+                pass  # اگر جدول وجود دارد، خطا نده
             
-            # روش صحیح برای PostgreSQL
+            # دریافت داده‌ها
             result = conn.execute(
                 text("SELECT id, table_name, description, created_at FROM allowed_tables ORDER BY table_name")
             )
-            tables = []
-            for row in result:
-                tables.append({
-                    'id': row[0],
-                    'table_name': row[1],
-                    'description': row[2],
-                    'created_at': row[3]
-                })
+            tables = result.fetchall()
             
     except Exception as e:
         flash(f"خطا در دریافت لیست جدول‌ها: {str(e)}", "danger")
-        tables = []
     
     # پردازش فرم اضافه کردن جدول جدید
     if request.method == "POST":
@@ -736,9 +727,8 @@ def is_table_allowed(table_name):
                 {"table_name": table_name}
             ).fetchone()
             return result is not None
-    except Exception as e:
+    except:
         return False
-
 
 
 
