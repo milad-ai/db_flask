@@ -4,9 +4,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ورود مدرس - CYPHER_NET</title>
+    <title>ورود مدرس - Kali Terminal</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -15,132 +15,54 @@
         }
 
         body {
-            font-family: 'Courier New', 'SF Mono', 'Monaco', 'Inconsolata', monospace;
-            background: #0a0a0a;
+            font-family: 'Courier New', monospace;
+            background-color: #000;
+            color: #ff0000;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
             padding: 20px;
-            line-height: 1.4;
-            position: relative;
             overflow: hidden;
-        }
-
-        /* Cyber Grid Background */
-        .cyber-grid {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            z-index: 0;
-            pointer-events: none;
-        }
-
-        .grid-line {
-            position: absolute;
-            background: linear-gradient(90deg, transparent, #00ff41, transparent);
-            opacity: 0.1;
-            animation: gridPulse 4s ease-in-out infinite;
-        }
-
-        .grid-h-1 {
-            top: 20%;
-            left: 0;
-            width: 100%;
-            height: 1px;
-            animation-delay: 0s;
-        }
-
-        .grid-h-2 {
-            top: 50%;
-            left: 0;
-            width: 100%;
-            height: 1px;
-            animation-delay: 1.5s;
-        }
-
-        .grid-h-3 {
-            top: 80%;
-            left: 0;
-            width: 100%;
-            height: 1px;
-            animation-delay: 3s;
-        }
-
-        .grid-v-1 {
-            top: 0;
-            left: 25%;
-            width: 1px;
-            height: 100%;
-            background: linear-gradient(0deg, transparent, #00ff41, transparent);
-            animation-delay: 0.75s;
-        }
-
-        .grid-v-2 {
-            top: 0;
-            left: 75%;
-            width: 1px;
-            height: 100%;
-            background: linear-gradient(0deg, transparent, #00ff41, transparent);
-            animation-delay: 2.25s;
-        }
-
-        @keyframes gridPulse {
-            0%, 100% { opacity: 0.1; }
-            50% { opacity: 0.3; }
-        }
-
-        .cyber-glitch {
-            position: absolute;
-            width: 200px;
-            height: 2px;
-            background: #ff0080;
-            opacity: 0;
-            animation: glitchFlash 6s ease-in-out infinite;
-        }
-
-        .glitch-1 {
-            top: 30%;
-            left: 10%;
-            animation-delay: 2s;
-        }
-
-        .glitch-2 {
-            top: 70%;
-            right: 10%;
-            animation-delay: 4s;
-        }
-
-        @keyframes glitchFlash {
-            0%, 95%, 100% { opacity: 0; transform: scaleX(0); }
-            96%, 99% { opacity: 0.8; transform: scaleX(1); }
-        }
-
-        .login-container {
-            width: 100%;
-            max-width: 450px;
             position: relative;
-            z-index: 1;
         }
 
-        .cyber-terminal {
-            background: rgba(0, 0, 0, 0.9);
-            border: 2px solid #00ff41;
-            border-radius: 8px;
+        /* افکت تایپینگ متون */
+        .typing-effect {
             overflow: hidden;
-            box-shadow: 0 0 30px rgba(0, 255, 65, 0.3), inset 0 0 0 1px rgba(0, 255, 65, 0.1);
-            position: relative;
+            white-space: nowrap;
+            margin: 0 auto;
+            animation: typing 3.5s steps(40, end);
+        }
+
+        @keyframes typing {
+            from { width: 0; }
+            to { width: 100%; }
+        }
+
+        /* ترمینال کالی */
+        .kali-terminal {
+            width: 100%;
+            max-width: 700px;
+            background-color: #000;
+            border: 2px solid #ff0000;
+            border-radius: 5px;
+            box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+            overflow: hidden;
         }
 
         .terminal-header {
-            background: linear-gradient(90deg, #1a1a1a, #2a2a2a);
-            padding: 12px 16px;
-            border-bottom: 1px solid #00ff41;
+            background-color: #200000;
+            padding: 10px 15px;
+            border-bottom: 1px solid #ff0000;
             display: flex;
-            align-items: center;
             justify-content: space-between;
+            align-items: center;
+        }
+
+        .terminal-title {
+            font-weight: bold;
+            font-size: 14px;
         }
 
         .terminal-buttons {
@@ -154,1188 +76,310 @@
             border-radius: 50%;
         }
 
-        .btn-red {
-            background: #ff5555;
-            box-shadow: 0 0 8px rgba(255, 85, 85, 0.5);
+        .btn-close {
+            background-color: #ff5f56;
         }
 
-        .btn-yellow {
-            background: #ffff55;
-            box-shadow: 0 0 8px rgba(255, 255, 85, 0.5);
+        .btn-minimize {
+            background-color: #ffbd2e;
         }
 
-        .btn-green {
-            background: #55ff55;
-            box-shadow: 0 0 8px rgba(85, 255, 85, 0.5);
+        .btn-maximize {
+            background-color: #27c93f;
         }
 
-        .terminal-title {
-            color: #00ff41;
-            font-size: 12px;
+        .terminal-body {
+            padding: 25px;
+        }
+
+        .command-line {
+            margin-bottom: 25px;
+        }
+
+        .prompt {
+            color: #ff0000;
             font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            margin-bottom: 5px;
         }
 
-        .cyber-content {
-            padding: 40px 32px;
+        .prompt::before {
+            content: "root@kali:~#";
+            margin-left: 5px;
+            color: #ff0000;
         }
 
-        .neon-header {
-            text-align: center;
-            margin-bottom: 36px;
+        .login-form {
+            margin-top: 20px;
         }
 
-        .cyber-logo {
-            position: relative;
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .form-group {
+            margin-bottom: 20px;
         }
 
-        .logo-frame {
-            position: relative;
-            z-index: 2;
-            color: #00ff41;
-            border: 2px solid #00ff41;
-            width: 60px;
-            height: 60px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(0, 255, 65, 0.05);
-            animation: logoScan 3s ease-in-out infinite;
-        }
-
-        @keyframes logoScan {
-            0%, 100% { 
-                border-color: #00ff41; 
-                box-shadow: 0 0 10px rgba(0, 255, 65, 0.3); 
-            }
-            50% { 
-                border-color: #ff0080; 
-                box-shadow: 0 0 15px rgba(255, 0, 128, 0.5); 
-            }
-        }
-
-        .logo-scanner {
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(0, 255, 65, 0.6), transparent);
-            animation: scanLine 2s linear infinite;
-        }
-
-        @keyframes scanLine {
-            0% { left: -100%; }
-            100% { left: 100%; }
-        }
-
-        .neon-glow {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background: radial-gradient(circle, rgba(0, 255, 65, 0.2) 0%, transparent 70%);
-            animation: neonPulse 2s ease-in-out infinite;
-        }
-
-        @keyframes neonPulse {
-            0%, 100% { transform: scale(1); opacity: 0.6; }
-            50% { transform: scale(1.2); opacity: 0.8; }
-        }
-
-        .cyber-title {
-            color: #00ff41;
-            font-size: 1.75rem;
-            font-weight: bold;
-            margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            position: relative;
-        }
-
-        .title-glitch {
-            position: relative;
-            display: inline-block;
-            animation: textGlitch 4s ease-in-out infinite;
-        }
-
-        @keyframes textGlitch {
-            0%, 90%, 100% { 
-                transform: translate(0); 
-                filter: hue-rotate(0deg); 
-            }
-            91%, 95% { 
-                transform: translate(-2px, 1px); 
-                filter: hue-rotate(90deg); 
-            }
-            96%, 99% { 
-                transform: translate(1px, -1px); 
-                filter: hue-rotate(180deg); 
-            }
-        }
-
-        .access-text {
-            color: #ff0080;
-            font-size: 13px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        /* Cyber Form Fields */
-        .cyber-field {
-            position: relative;
-            margin-bottom: 28px;
-        }
-
-        .field-frame {
-            position: relative;
-            background: rgba(0, 0, 0, 0.8);
-            border: 1px solid rgba(0, 255, 65, 0.3);
-            border-radius: 4px;
-            overflow: hidden;
-        }
-
-        .field-border {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            border: 1px solid transparent;
-            border-radius: 4px;
-            background: linear-gradient(45deg, #00ff41, #ff0080) border-box;
-            -webkit-mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
-            -webkit-mask-composite: destination-out;
-            mask: linear-gradient(#fff 0 0) padding-box, linear-gradient(#fff 0 0);
-            mask-composite: exclude;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .cyber-field input {
-            width: 100%;
-            background: transparent;
-            border: none;
-            padding: 16px 60px 16px 16px;
-            color: #00ff41;
-            font-size: 14px;
-            font-weight: bold;
-            outline: none;
-            position: relative;
-            z-index: 2;
-            font-family: inherit;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .cyber-field input::placeholder {
-            color: transparent;
-        }
-
-        .cyber-field label {
-            position: absolute;
-            right: 16px;
-            top: 50%;
-            transform: translateY(-50%);
-            color: rgba(0, 255, 65, 0.6);
-            font-size: 14px;
-            font-weight: bold;
-            pointer-events: none;
-            transition: all 0.3s ease;
-            z-index: 3;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .cyber-field input:focus + label,
-        .cyber-field input:not(:placeholder-shown) + label {
-            top: 8px;
-            font-size: 10px;
-            color: #00ff41;
-            transform: translateY(0);
-        }
-
-        .cyber-field input:focus ~ .field-border {
-            opacity: 1;
-        }
-
-        .cyber-scanner {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        .scan-line {
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, rgba(0, 255, 65, 0.3), transparent);
-            transition: left 0.5s ease;
-        }
-
-        .cyber-field input:focus ~ .cyber-scanner .scan-line {
-            left: 100%;
-            animation: continuousScan 2s linear infinite;
-        }
-
-        @keyframes continuousScan {
-            0% { left: -100%; }
-            100% { left: 100%; }
-        }
-
-        /* Cyber Toggle */
-        .cyber-field:has(.cyber-toggle) input {
-            padding-right: 100px;
-        }
-
-        .cyber-toggle {
-            position: absolute;
-            left: 16px;
-            top: 50%;
-            transform: translateY(-50%);
-            background: none;
-            border: none;
-            cursor: pointer;
-            z-index: 4;
-            padding: 4px;
-        }
-
-        .toggle-frame {
-            width: 24px;
-            height: 24px;
-            border: 1px solid rgba(0, 255, 65, 0.5);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #00ff41;
-            transition: all 0.3s ease;
-            background: rgba(0, 0, 0, 0.8);
-        }
-
-        .cyber-toggle:hover .toggle-frame {
-            border-color: #00ff41;
-            box-shadow: 0 0 8px rgba(0, 255, 65, 0.3);
-        }
-
-        .eye-blocked {
-            display: none;
-        }
-
-        .cyber-toggle.toggle-active .eye-scan {
-            display: none;
-        }
-
-        .cyber-toggle.toggle-active .eye-blocked {
+        .form-label {
             display: block;
-        }
-
-        /* Cyber Options */
-        .cyber-options {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 32px;
-            flex-wrap: wrap;
-            gap: 16px;
-        }
-
-        .neon-checkbox {
-            display: flex;
-            align-items: center;
-            cursor: pointer;
-            font-size: 12px;
-            color: #00ff41;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .neon-checkbox input[type="checkbox"] {
-            display: none;
-        }
-
-        .checkbox-matrix {
-            width: 20px;
-            height: 20px;
-            margin-left: 12px;
-            position: relative;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .matrix-frame {
-            width: 100%;
-            height: 100%;
-            border: 1px solid rgba(0, 255, 65, 0.5);
-            background: rgba(0, 0, 0, 0.8);
-            transition: all 0.3s ease;
-            position: absolute;
-        }
-
-        .checkbox-matrix svg {
-            color: transparent;
-            transition: color 0.3s ease;
-            position: relative;
-            z-index: 1;
-        }
-
-        .neon-checkbox input[type="checkbox"]:checked + .checkbox-matrix .matrix-frame {
-            background: rgba(0, 255, 65, 0.2);
-            border-color: #00ff41;
-            box-shadow: 0 0 8px rgba(0, 255, 65, 0.3);
-        }
-
-        .neon-checkbox input[type="checkbox"]:checked + .checkbox-matrix svg {
-            color: #00ff41;
-        }
-
-        .cyber-link {
-            color: #ff0080;
-            text-decoration: none;
-            font-size: 12px;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        .cyber-link::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            right: 0;
-            width: 0;
-            height: 1px;
-            background: #ff0080;
-            transition: width 0.3s ease;
-        }
-
-        .cyber-link:hover::after {
-            width: 100%;
-        }
-
-        .cyber-link:hover {
-            color: #ff4da6;
-            text-shadow: 0 0 5px rgba(255, 0, 128, 0.5);
-        }
-
-        /* Neon Button */
-        .neon-button {
-            width: 100%;
-            background: transparent;
-            color: #00ff41;
-            border: 2px solid #00ff41;
-            border-radius: 4px;
-            padding: 0;
-            cursor: pointer;
-            font-family: inherit;
-            font-size: 14px;
-            font-weight: bold;
-            position: relative;
-            margin-bottom: 32px;
-            overflow: hidden;
-            min-height: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            transition: all 0.3s ease;
-        }
-
-        .btn-matrix {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.9);
-            transition: all 0.3s ease;
-        }
-
-        .neon-button:hover {
-            border-color: #ff0080;
-            color: #ff0080;
-            box-shadow: 0 0 15px rgba(255, 0, 128, 0.5);
-        }
-
-        .neon-button:hover .btn-matrix {
-            background: rgba(255, 0, 128, 0.1);
-        }
-
-        .neon-button:active {
-            transform: scale(0.98);
-        }
-
-        .btn-text {
-            position: relative;
-            z-index: 2;
-            transition: opacity 0.3s ease;
-        }
-
-        .btn-loader {
-            position: absolute;
-            z-index: 2;
-            opacity: 0;
-            transition: opacity 0.3s ease;
-        }
-
-        .matrix-loader {
-            display: flex;
-            gap: 4px;
-        }
-
-        .matrix-bar {
-            width: 3px;
-            height: 16px;
-            background: #00ff41;
-            animation: matrixPulse 1.2s ease-in-out infinite;
-        }
-
-        .matrix-bar:nth-child(2) { animation-delay: 0.1s; }
-        .matrix-bar:nth-child(3) { animation-delay: 0.2s; }
-        .matrix-bar:nth-child(4) { animation-delay: 0.3s; }
-
-        @keyframes matrixPulse {
-            0%, 80%, 100% { transform: scaleY(0.5); opacity: 0.5; }
-            40% { transform: scaleY(1); opacity: 1; }
-        }
-
-        .neon-button.loading .btn-text {
-            opacity: 0;
-        }
-
-        .neon-button.loading .btn-loader {
-            opacity: 1;
-        }
-
-        .btn-glow {
-            position: absolute;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            bottom: -2px;
-            background: #00ff41;
-            border-radius: 6px;
-            opacity: 0;
-            filter: blur(8px);
-            transition: opacity 0.3s ease;
-            z-index: -1;
-        }
-
-        .neon-button:hover .btn-glow {
-            opacity: 0.3;
-        }
-
-        /* Cyber Divider */
-        .cyber-divider {
-            display: flex;
-            align-items: center;
-            margin: 32px 0;
-            gap: 16px;
-        }
-
-        .divider-grid {
-            flex: 1;
-            height: 1px;
-            background: linear-gradient(90deg, transparent, rgba(0, 255, 65, 0.3), transparent);
-            position: relative;
-            overflow: hidden;
-        }
-
-        .divider-grid::after {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: -100%;
-            width: 100%;
-            height: 100%;
-            background: linear-gradient(90deg, transparent, #00ff41, transparent);
-            animation: dividerScan 3s linear infinite;
-        }
-
-        @keyframes dividerScan {
-            0% { left: -100%; }
-            100% { left: 100%; }
-        }
-
-        .divider-text {
-            color: rgba(0, 255, 65, 0.7);
-            font-size: 11px;
-            font-weight: bold;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        /* Matrix Social */
-        .matrix-social {
-            display: flex;
-            gap: 12px;
-            margin-bottom: 32px;
-        }
-
-        .social-matrix {
-            flex: 1;
-            background: transparent;
-            color: #00ff41;
-            border: 1px solid rgba(0, 255, 65, 0.3);
-            border-radius: 4px;
-            padding: 12px 16px;
-            cursor: pointer;
-            font-family: inherit;
-            font-size: 11px;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            gap: 8px;
-            transition: all 0.3s ease;
-            min-height: 44px;
-            position: relative;
-            overflow: hidden;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .social-frame {
-            position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.9);
-            transition: all 0.3s ease;
-        }
-
-        .social-matrix:hover {
-            border-color: #00ff41;
-            box-shadow: 0 0 10px rgba(0, 255, 65, 0.3);
-        }
-
-        .social-matrix:hover .social-frame {
-            background: rgba(0, 255, 65, 0.1);
-        }
-
-        .social-matrix span,
-        .social-matrix svg {
-            position: relative;
-            z-index: 2;
-        }
-
-        .social-glow {
-            position: absolute;
-            top: -1px;
-            left: -1px;
-            right: -1px;
-            bottom: -1px;
-            background: rgba(0, 255, 65, 0.2);
-            border-radius: 5px;
-            opacity: 0;
-            filter: blur(4px);
-            transition: opacity 0.3s ease;
-            z-index: 0;
-        }
-
-        .social-matrix:hover .social-glow {
-            opacity: 1;
-        }
-
-        /* Matrix Signup */
-        .matrix-signup {
-            text-align: center;
-            font-size: 12px;
-            color: rgba(0, 255, 65, 0.7);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .matrix-link {
-            color: #ff0080;
-            text-decoration: none;
-            font-weight: bold;
-            transition: all 0.3s ease;
-            position: relative;
-        }
-
-        .matrix-link::after {
-            content: '';
-            position: absolute;
-            bottom: -2px;
-            right: 0;
-            width: 0;
-            height: 1px;
-            background: #ff0080;
-            transition: width 0.3s ease;
-        }
-
-        .matrix-link:hover::after {
-            width: 100%;
-        }
-
-        .matrix-link:hover {
-            color: #ff4da6;
-            text-shadow: 0 0 5px rgba(255, 0, 128, 0.5);
-        }
-
-        /* Cyber Error */
-        .cyber-error {
-            color: #ff0080;
-            font-size: 11px;
-            font-weight: bold;
-            margin-top: 6px;
-            opacity: 0;
-            transform: translateY(-4px);
-            transition: all 0.3s ease;
-            position: relative;
-            z-index: 5;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .cyber-error.show {
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .cyber-field.error .field-frame {
-            border-color: #ff0080;
-        }
-
-        .cyber-field.error .field-border {
-            opacity: 1;
-        }
-
-        .cyber-field.error label {
-            color: #ff0080;
-        }
-
-        /* Cyber Success */
-        .cyber-success {
-            display: none;
-            text-align: center;
-            padding: 40px 20px;
-            opacity: 0;
-            transform: translateY(20px);
-            transition: all 0.4s ease;
-        }
-
-        .cyber-success.show {
-            display: block;
-            opacity: 1;
-            transform: translateY(0);
-        }
-
-        .success-matrix {
-            position: relative;
-            width: 100px;
-            height: 100px;
-            margin: 0 auto 24px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .matrix-rings {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-        }
-
-        .success-ring {
-            position: absolute;
-            border: 2px solid #00ff41;
-            border-radius: 50%;
-            animation: matrixExpand 1.5s ease-out forwards;
-            opacity: 0;
-        }
-
-        .ring-1 {
-            width: 60px;
-            height: 60px;
-            top: 20px;
-            left: 20px;
-            animation-delay: 0s;
-        }
-
-        .ring-2 {
-            width: 80px;
-            height: 80px;
-            top: 10px;
-            left: 10px;
-            animation-delay: 0.3s;
-        }
-
-        .ring-3 {
-            width: 100px;
-            height: 100px;
-            top: 0;
-            left: 0;
-            animation-delay: 0.6s;
-        }
-
-        @keyframes matrixExpand {
-            0% { opacity: 0; transform: scale(0); }
-            50% { opacity: 1; transform: scale(1.1); }
-            100% { opacity: 0.8; transform: scale(1); }
-        }
-
-        .success-core {
-            position: relative;
-            z-index: 2;
-            color: #00ff41;
-            animation: coreActivate 0.8s ease-out 0.9s forwards;
-            opacity: 0;
-        }
-
-        @keyframes coreActivate {
-            0% { opacity: 0; transform: scale(0); }
-            100% { opacity: 1; transform: scale(1); }
-        }
-
-        .success-title {
-            color: #00ff41;
-            font-size: 1.25rem;
-            font-weight: bold;
             margin-bottom: 8px;
-            text-transform: uppercase;
-            letter-spacing: 2px;
+            color: #ff0000;
+            font-weight: bold;
         }
 
-        .success-desc {
-            color: rgba(0, 255, 65, 0.7);
-            font-size: 12px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        /* Mobile Responsive */
-        @media (max-width: 480px) {
-            body {
-                padding: 16px;
-            }
-            
-            .cyber-terminal {
-                border-radius: 4px;
-            }
-            
-            .cyber-content {
-                padding: 32px 24px;
-            }
-            
-            .cyber-title {
-                font-size: 1.5rem;
-            }
-            
-            .cyber-logo {
-                width: 60px;
-                height: 60px;
-            }
-            
-            .logo-frame {
-                width: 50px;
-                height: 50px;
-            }
-            
-            .cyber-options {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 16px;
-            }
-            
-            .matrix-social {
-                flex-direction: column;
-            }
-            
-            .grid-line {
-                opacity: 0.05;
-            }
-        }
-
-        /* Alert Styles */
-        .alert {
-            background: rgba(255, 0, 0, 0.2);
+        .form-input {
+            width: 100%;
+            background-color: #111;
             border: 1px solid #ff0000;
             color: #ff0000;
-            border-radius: 6px;
-            margin-bottom: 1rem;
-            padding: 12px 16px;
+            padding: 12px 15px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 16px;
+        }
+
+        .form-input:focus {
+            outline: none;
+            box-shadow: 0 0 8px rgba(255, 0, 0, 0.5);
+        }
+
+        .btn-login {
+            background-color: #ff0000;
+            color: #000;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-login:hover {
+            background-color: #ff3333;
+            box-shadow: 0 0 10px rgba(255, 0, 0, 0.7);
+        }
+
+        .terminal-output {
+            margin-top: 20px;
+            border-top: 1px solid #333;
+            padding-top: 15px;
             font-size: 14px;
-            display: flex;
-            align-items: center;
+            color: #ff4444;
+        }
+
+        /* خط کشی ترمینال */
+        .scan-line {
+            position: absolute;
+            left: 0;
+            right: 0;
+            height: 2px;
+            background: linear-gradient(90deg, transparent, #ff0000, transparent);
+            z-index: 10;
+            animation: scan 4s linear infinite;
+        }
+
+        @keyframes scan {
+            0% { top: 0%; }
+            100% { top: 100%; }
+        }
+
+        /* افکت نمایش متن */
+        .typewriter {
+            overflow: hidden;
+            border-right: 0.15em solid #ff0000;
+            white-space: nowrap;
+            margin: 0 auto;
+            letter-spacing: 0.15em;
+            animation: typing 3.5s steps(40, end), blink-caret 0.75s step-end infinite;
+        }
+
+        @keyframes blink-caret {
+            from, to { border-color: transparent; }
+            50% { border-color: #ff0000; }
+        }
+
+        /* سیستم هشدار */
+        .alert {
+            padding: 12px;
+            margin-bottom: 20px;
+            border: 1px solid #ff0000;
+            background-color: rgba(255, 0, 0, 0.1);
+            border-radius: 4px;
+            color: #ff0000;
         }
 
         .alert-success {
-            background: rgba(0, 255, 0, 0.2);
-            border: 1px solid #00ff00;
+            border-color: #00ff00;
+            background-color: rgba(0, 255, 0, 0.1);
             color: #00ff00;
         }
 
-        .alert-dismissible .btn-close {
-            padding: 0.75rem;
-            filter: invert(1);
+        /* کپی رایت */
+        .copyright {
+            margin-top: 30px;
+            text-align: center;
+            font-size: 12px;
+            color: #666;
+        }
+
+        /* دکمه های ترمینال */
+        .terminal-menu {
+            display: flex;
+            gap: 15px;
+            margin-top: 20px;
+            border-top: 1px solid #333;
+            padding-top: 15px;
+        }
+
+        .term-menu-btn {
+            background: none;
+            border: 1px solid #ff0000;
+            color: #ff0000;
+            padding: 8px 15px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            transition: all 0.3s;
+        }
+
+        .term-menu-btn:hover {
+            background-color: rgba(255, 0, 0, 0.2);
         }
     </style>
 </head>
 <body>
-    <div class="cyber-grid">
-        <div class="grid-line grid-h-1"></div>
-        <div class="grid-line grid-v-1"></div>
-        <div class="grid-line grid-h-2"></div>
-        <div class="grid-line grid-v-2"></div>
-        <div class="grid-line grid-h-3"></div>
-        <div class="cyber-glitch glitch-1"></div>
-        <div class="cyber-glitch glitch-2"></div>
-    </div>
+    <div class="scan-line"></div>
 
-    <div class="login-container">
-        <div class="cyber-terminal">
-            <div class="terminal-header">
-                <div class="terminal-buttons">
-                    <div class="term-btn btn-red"></div>
-                    <div class="term-btn btn-yellow"></div>
-                    <div class="term-btn btn-green"></div>
-                </div>
-                <div class="terminal-title">DB_SBU.exe</div>
+    <div class="kali-terminal">
+        <div class="terminal-header">
+            <div class="terminal-title">root@kali: ~/login</div>
+            <div class="terminal-buttons">
+                <div class="term-btn btn-close"></div>
+                <div class="term-btn btn-minimize"></div>
+                <div class="term-btn btn-maximize"></div>
             </div>
-            
-            <div class="cyber-content">
-                <div class="neon-header">
-                    <div class="cyber-logo">
-                        <div class="logo-frame">
-                            <div class="logo-core">
-                                <svg width="40" height="40" viewBox="0 0 40 40" fill="none">
-                                    <path d="M20 4L36 12v16L20 36L4 28V12L20 4z" stroke="currentColor" stroke-width="2" fill="none"/>
-                                    <circle cx="20" cy="20" r="6" stroke="currentColor" stroke-width="1.5"/>
-                                    <path d="M14 14l12 12M26 14l-12 12" stroke="currentColor" stroke-width="1"/>
-                                </svg>
-                            </div>
-                            <div class="logo-scanner"></div>
+        </div>
+
+        <div class="terminal-body">
+            <div class="command-line">
+                <div class="prompt"></div>
+                <div class="typewriter">سیستم احراز هویت کالی لینوکس - ورود مدرسین</div>
+            </div>
+
+            <div class="command-line">
+                <div class="prompt"></div>
+                <div class="typing-effect">./auth_system.sh --role=teacher</div>
+            </div>
+
+            <div class="command-line">
+                <div class="prompt"></div>
+                <div class="typing-effect">در حال راه اندازی سیستم ...</div>
+            </div>
+
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                        <div class="alert alert-{{ category }}">
+                            <div class="prompt"></div>
+                            {{ message }}
                         </div>
-                        <div class="neon-glow"></div>
-                    </div>
-                    <h1 class="cyber-title">
-                        <span class="title-glitch" data-text="ورود مدرس">ورود مدرس</span>
-                    </h1>
-                    <p class="access-text">[ SECURE_TERMINAL_ACCESS ]</p>
+                    {% endfor %}
+                {% endif %}
+            {% endwith %}
+
+            <form method="POST" class="login-form">
+                <div class="form-group">
+                    <label class="form-label">نام کاربری:</label>
+                    <input type="text" name="username" class="form-input" placeholder="> username" required>
                 </div>
-                
-                {% with messages = get_flashed_messages(with_categories=true) %}
-                    {% if messages %}
-                        {% for category, message in messages %}
-                            <div class="alert alert-{{ category }} alert-dismissible fade show">
-                                <i class="bi bi-{% if category == 'success' %}check-circle{% else %}exclamation-triangle{% endif %} me-2"></i>
-                                {{ message }}
-                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-                            </div>
-                        {% endfor %}
-                    {% endif %}
-                {% endwith %}
-                
-                <form method="POST" class="neon-form" id="loginForm">
-                    <div class="cyber-field">
-                        <div class="field-frame">
-                            <div class="field-border"></div>
-                            <input type="text" name="username" id="username" required autocomplete="username">
-                            <label for="username">&gt; نام کاربری</label>
-                            <div class="cyber-scanner">
-                                <div class="scan-line"></div>
-                            </div>
-                        </div>
-                        <span class="cyber-error" id="usernameError"></span>
-                    </div>
 
-                    <div class="cyber-field">
-                        <div class="field-frame">
-                            <div class="field-border"></div>
-                            <input type="password" name="password" id="password" required autocomplete="current-password">
-                            <label for="password">&gt; رمز عبور</label>
-                            <button type="button" class="cyber-toggle" id="passwordToggle" aria-label="Toggle password visibility">
-                                <div class="toggle-frame">
-                                    <svg class="eye-scan" width="18" height="18" viewBox="0 0 18 18" fill="none">
-                                        <path d="M9 3c-4 0-7 3-8 6 1 3 4 6 8 6s7-3 8-6c-1-3-4-6-8-6zm0 10a4 4 0 110-8 4 4 0 010 8zm0-6a2 2 0 100 4 2 2 0 000-4z" fill="currentColor"/>
-                                    </svg>
-                                    <svg class="eye-blocked" width="18" height="18" viewBox="0 0 18 18" fill="none">
-                                        <path d="M3 3l12 12M7 7a3 3 0 003 3m3-3C13 7 10 4 9 4c-1 0-3 1-4 2M9 14c4 0 7-3 8-6-1-1-2-2-3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                                    </svg>
-                                </div>
-                            </button>
-                            <div class="cyber-scanner">
-                                <div class="scan-line"></div>
-                            </div>
-                        </div>
-                        <span class="cyber-error" id="passwordError"></span>
-                    </div>
+                <div class="form-group">
+                    <label class="form-label">رمز عبور:</label>
+                    <input type="password" name="password" class="form-input" placeholder="> password" required>
+                </div>
 
-                    <button type="submit" class="neon-button">
-                        <div class="btn-matrix"></div>
-                        <span class="btn-text">[ دسترسی به سیستم ]</span>
-                        <div class="btn-loader">
-                            <div class="matrix-loader">
-                                <div class="matrix-bar"></div>
-                                <div class="matrix-bar"></div>
-                                <div class="matrix-bar"></div>
-                                <div class="matrix-bar"></div>
-                            </div>
-                        </div>
-                        <div class="btn-glow"></div>
-                    </button>
-                </form>
+                <button type="submit" class="btn-login">
+                    <i class="bi bi-terminal"></i> ورود به سیستم
+                </button>
+            </form>
+
+            <div class="terminal-output">
+                <div class="prompt"></div>
+                <div>وضعیت سیستم: فعال | حالت: احراز هویت | آخرین ورود: نامشخص</div>
+            </div>
+
+            <div class="terminal-menu">
+                <button class="term-menu-btn">بازنشانی</button>
+                <button class="term-menu-btn">راهنما</button>
+                <button class="term-menu-btn">خروج</button>
             </div>
         </div>
     </div>
 
+    <div class="copyright">
+        Kali Linux Terminal Interface v2.3.4 | © 2023 Cybersecurity Team
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        // Neon Cyber Login Form JavaScript
-        class NeonCyberLoginForm {
-            constructor() {
-                this.form = document.getElementById('loginForm');
-                this.usernameInput = document.getElementById('username');
-                this.passwordInput = document.getElementById('password');
-                this.passwordToggle = document.getElementById('passwordToggle');
-                this.submitButton = this.form.querySelector('.neon-button');
-                
-                this.init();
-            }
-            
-            init() {
-                this.bindEvents();
-                this.setupPasswordToggle();
-                this.setupCyberEffects();
-            }
-            
-            bindEvents() {
-                this.form.addEventListener('submit', (e) => this.handleSubmit(e));
-                this.usernameInput.addEventListener('blur', () => this.validateUsername());
-                this.passwordInput.addEventListener('blur', () => this.validatePassword());
-                this.usernameInput.addEventListener('input', () => this.clearError('username'));
-                this.passwordInput.addEventListener('input', () => this.clearError('password'));
-                
-                // Add placeholder for label animations
-                this.usernameInput.setAttribute('placeholder', ' ');
-                this.passwordInput.setAttribute('placeholder', ' ');
-            }
-            
-            setupPasswordToggle() {
-                this.passwordToggle.addEventListener('click', () => {
-                    const type = this.passwordInput.type === 'password' ? 'text' : 'password';
-                    this.passwordInput.type = type;
-                    
-                    this.passwordToggle.classList.toggle('toggle-active', type === 'text');
-                    
-                    // Add cyber effect
-                    this.triggerCyberGlitch(this.passwordToggle);
-                });
-            }
-            
-            setupCyberEffects() {
-                // Add cyber scanning effects on input focus
-                [this.usernameInput, this.passwordInput].forEach(input => {
-                    input.addEventListener('focus', (e) => {
-                        this.triggerCyberScan(e.target.closest('.cyber-field'));
-                    });
-                    
-                    input.addEventListener('blur', (e) => {
-                        this.stopCyberScan(e.target.closest('.cyber-field'));
-                    });
-                });
-                
-                // Add random glitch effects
-                this.startRandomGlitches();
-            }
-            
-            triggerCyberScan(field) {
-                // Activate scanning animation
-                const scanner = field.querySelector('.cyber-scanner');
-                scanner.style.opacity = '1';
-            }
-            
-            stopCyberScan(field) {
-                // Deactivate scanning animation
-                const scanner = field.querySelector('.cyber-scanner');
-                scanner.style.opacity = '0.3';
-            }
-            
-            triggerCyberGlitch(element) {
-                // Add temporary glitch effect
-                element.style.filter = 'hue-rotate(180deg)';
-                setTimeout(() => {
-                    element.style.filter = '';
-                }, 200);
-            }
-            
-            startRandomGlitches() {
-                // Add random glitch effects to title
-                setInterval(() => {
-                    const titleGlitch = document.querySelector('.title-glitch');
-                    if (Math.random() < 0.1) { // 10% chance every interval
-                        titleGlitch.style.animation = 'none';
-                        titleGlitch.style.transform = `translate(${Math.random() * 4 - 2}px, ${Math.random() * 4 - 2}px)`;
-                        titleGlitch.style.filter = `hue-rotate(${Math.random() * 360}deg)`;
-                        
-                        setTimeout(() => {
-                            titleGlitch.style.animation = '';
-                            titleGlitch.style.transform = '';
-                            titleGlitch.style.filter = '';
-                        }, 100);
-                    }
-                }, 2000);
-            }
-            
-            validateUsername() {
-                const username = this.usernameInput.value.trim();
-                
-                if (!username) {
-                    this.showError('username', '[ ERROR: USERNAME_REQUIRED ]');
-                    return false;
-                }
-                
-                this.clearError('username');
-                return true;
-            }
-            
-            validatePassword() {
-                const password = this.passwordInput.value;
-                
-                if (!password) {
-                    this.showError('password', '[ ERROR: PASSWORD_REQUIRED ]');
-                    return false;
-                }
-                
-                if (password.length < 6) {
-                    this.showError('password', '[ ERROR: PASSWORD_TOO_SHORT ]');
-                    return false;
-                }
-                
-                this.clearError('password');
-                return true;
-            }
-            
-            showError(field, message) {
-                const cyberField = document.getElementById(field).closest('.cyber-field');
-                const errorElement = document.getElementById(`${field}Error`);
-                
-                cyberField.classList.add('error');
-                errorElement.textContent = message;
-                errorElement.classList.add('show');
-                
-                // Add error glitch effect
-                this.triggerCyberGlitch(cyberField);
-            }
-            
-            clearError(field) {
-                const cyberField = document.getElementById(field).closest('.cyber-field');
-                const errorElement = document.getElementById(`${field}Error`);
-                
-                cyberField.classList.remove('error');
-                errorElement.classList.remove('show');
-                setTimeout(() => {
-                    errorElement.textContent = '';
-                }, 300);
-            }
-            
-            async handleSubmit(e) {
-                e.preventDefault();
-                
-                const isUsernameValid = this.validateUsername();
-                const isPasswordValid = this.validatePassword();
-                
-                if (!isUsernameValid || !isPasswordValid) {
-                    // Add system error glitch
-                    this.triggerSystemGlitch();
-                    return;
-                }
-                
-                this.setLoading(true);
-                
-                try {
-                    // Simulate cyber authentication process
-                    await new Promise(resolve => setTimeout(resolve, 2000));
-                    
-                    // Submit the form
-                    this.form.submit();
-                } catch (error) {
-                    this.showError('password', '[ ERROR: CONNECTION_FAILED ]');
-                    this.setLoading(false);
-                }
-            }
-            
-            setLoading(loading) {
-                this.submitButton.classList.toggle('loading', loading);
-                this.submitButton.disabled = loading;
-                
-                if (loading) {
-                    // Add loading glitch effects
-                    this.startLoadingGlitches();
-                }
-            }
-            
-            startLoadingGlitches() {
-                // Add periodic glitches during loading
-                const glitchInterval = setInterval(() => {
-                    if (!this.submitButton.classList.contains('loading')) {
-                        clearInterval(glitchInterval);
-                        return;
-                    }
-                    
-                    const terminal = document.querySelector('.cyber-terminal');
-                    terminal.style.filter = 'hue-rotate(180deg)';
-                    setTimeout(() => {
-                        terminal.style.filter = '';
-                    }, 50);
-                }, 500);
-            }
-            
-            triggerSystemGlitch() {
-                // System-wide glitch effect for errors
-                const terminal = document.querySelector('.cyber-terminal');
-                terminal.style.animation = 'none';
-                terminal.style.transform = 'translate(2px, -1px)';
-                terminal.style.filter = 'hue-rotate(270deg)';
-                
-                setTimeout(() => {
-                    terminal.style.animation = '';
-                    terminal.style.transform = '';
-                    terminal.style.filter = '';
-                }, 200);
-            }
-        }
+        // شبیه سازی تایپ در ترمینال
+        document.addEventListener('DOMContentLoaded', function() {
+            // اضافه کردن خط فرمان جدید بعد از مدتی
+            setTimeout(function() {
+                const newCommand = document.createElement('div');
+                newCommand.className = 'command-line';
+                newCommand.innerHTML = `
+                    <div class="prompt"></div>
+                    <div class="typing-effect">سیستم آماده به کار است. لطفا اطلاعات خود را وارد کنید.</div>
+                `;
+                document.querySelector('.terminal-body').insertBefore(newCommand, document.querySelector('.login-form'));
+            }, 4000);
 
-        // Initialize the cyber form when DOM is loaded
-        document.addEventListener('DOMContentLoaded', () => {
-            new NeonCyberLoginForm();
-            
-            // افکت تایپینگ برای عنوان
-            const title = document.querySelector('.cyber-title .title-glitch');
-            const text = title.textContent;
-            title.textContent = '';
-            let i = 0;
-            function typeEffect() {
-                if (i < text.length) {
-                    title.textContent += text.charAt(i);
-                    i++;
-                    setTimeout(typeEffect, 100);
+            // افزودن افکت تایپینگ به تمام عناصر با کلاس typing-effect
+            const typingElements = document.querySelectorAll('.typing-effect');
+            typingElements.forEach(el => {
+                const text = el.textContent;
+                el.textContent = '';
+                let i = 0;
+                
+                function typeWriter() {
+                    if (i < text.length) {
+                        el.textContent += text.charAt(i);
+                        i++;
+                        setTimeout(typeWriter, 50);
+                    }
                 }
-            }
-            setTimeout(typeEffect, 1000);
+                
+                setTimeout(typeWriter, 600);
+            });
+
+            // شبیه سازی اجرای دستورات در ترمینال
+            const terminalBody = document.querySelector('.terminal-body');
+            
+            setTimeout(() => {
+                const newLine = document.createElement('div');
+                newLine.className = 'command-line';
+                newLine.innerHTML = '<div class="prompt"></div><div>./check_security.sh --level=high</div>';
+                terminalBody.insertBefore(newLine, document.querySelector('.login-form'));
+            }, 2500);
+            
+            setTimeout(() => {
+                const newLine = document.createElement('div');
+                newLine.className = 'command-line';
+                newLine.innerHTML = '<div class="prompt"></div><div>بررسی امنیتی تکمیل شد. هیچ تهدیدی شناسایی نشد.</div>';
+                terminalBody.insertBefore(newLine, document.querySelector('.login-form'));
+            }, 3500);
+        });
+
+        // مدیریت دکمه های ترمینال
+        document.querySelector('.btn-close').addEventListener('click', function() {
+            alert('دسترسی غیرمجاز. این عمل قابل اجرا نیست.');
+        });
+
+        document.querySelector('.btn-minimize').addEventListener('click', function() {
+            alert('سیستم در حال حاضر در حالت بهینه کار می کند.');
+        });
+
+        document.querySelector('.btn-maximize').addEventListener('click', function() {
+            document.querySelector('.kali-terminal').classList.toggle('fullscreen');
         });
     </script>
 </body>
