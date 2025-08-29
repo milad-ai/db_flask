@@ -7,7 +7,7 @@
         <h4 class="mb-3" dir="ltr">تمرین روی جدول آزمایشی</h4>
     </div>
 
-    <form method="POST">
+    <form method="POST" id="queryForm">
         <div class="mb-3">
             <textarea name="query" class="form-control query-box" rows="4" placeholder="مثال: SELECT * FROM test;" required>{{ query or '' }}</textarea>
         </div>
@@ -21,7 +21,7 @@
             </a>
             
             {% if output %}
-            <button type="submit" name="send_to_teacher" value="1" class="btn btn-success">
+            <button type="button" class="btn btn-success" data-bs-toggle="modal" data-bs-target="#confirmationModal">
                 <i class="fas fa-paper-plane"></i> ارسال به مدرس
             </button>
             {% endif %}
@@ -69,8 +69,30 @@
     {% endif %}
 </div>
 
+<!-- Modal تأیید ارسال -->
+<div class="modal fade" id="confirmationModal" tabindex="-1" aria-labelledby="confirmationModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="confirmationModalLabel">تأیید ارسال</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                آیا از ارسال این کوئری و نتایج به مدرس خود اطمینان دارید؟
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">لغو</button>
+                <button type="button" class="btn btn-success" id="confirmSend">بله، ارسال کن</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 <!-- اضافه کردن Font Awesome برای آیکون‌ها -->
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+
+<!-- اضافه کردن Bootstrap JS برای modal -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
 
 <style>
 .header-section {
@@ -195,4 +217,23 @@
     }
 }
 </style>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // اضافه کردن event listener برای دکمه تأیید در modal
+    document.getElementById('confirmSend').addEventListener('click', function() {
+        // ایجاد یک input مخفی برای ارسال در فرم
+        const hiddenInput = document.createElement('input');
+        hiddenInput.type = 'hidden';
+        hiddenInput.name = 'send_to_teacher';
+        hiddenInput.value = '1';
+        
+        // اضافه کردن input به فرم
+        document.getElementById('queryForm').appendChild(hiddenInput);
+        
+        // ارسال فرم
+        document.getElementById('queryForm').submit();
+    });
+});
+</script>
 {% endblock %}
