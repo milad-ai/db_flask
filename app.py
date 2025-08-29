@@ -572,7 +572,6 @@ def admin_delete_user(student_id):
 
 
 
-# مسیر مشاهده کوئری‌های ارسالی برای مدرس
 @app.route("/admin/teacher_queries")
 def admin_teacher_queries():
     if not session.get("admin_logged_in"):
@@ -583,19 +582,6 @@ def admin_teacher_queries():
     
     try:
         with engine.begin() as conn:
-            # ایجاد جدول اگر وجود ندارد (با syntax مناسب PostgreSQL)
-            conn.execute(text("""
-                CREATE TABLE IF NOT EXISTS teacher_queries (
-                    id SERIAL PRIMARY KEY,
-                    student_id TEXT NOT NULL,
-                    student_name TEXT NOT NULL,
-                    major TEXT NOT NULL,
-                    query TEXT NOT NULL,
-                    output TEXT,
-                    submission_time TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-                )
-            """))
-            
             # گرفتن لیست کوئری‌های ارسالی با فیلتر
             query = text("""
                 SELECT id, student_id, student_name, major, query, output, submission_time
@@ -617,13 +603,19 @@ def admin_teacher_queries():
             # تبدیل به لیست از دیکشنری‌های قابل تغییر
             result_rows = []
             for row in rows:
+                try:
+                    # تلاش برای parse کردن خروجی JSON
+                    output_data = json.loads(row[5]) if row[5] else None
+                except json.JSONDecodeError:
+                    output_data = {"error": "خطا در خواندن خروجی JSON"}
+                
                 row_dict = {
                     "id": row[0],
                     "student_id": row[1],
                     "student_name": row[2],
                     "major": row[3],
                     "query": row[4],
-                    "output": json.loads(row[5]) if row[5] else None,
+                    "output": output_data,  # داده‌های parse شده
                     "submission_time": row[6],
                     "submission_time_fa": format_datetime_fa(row[6]) if row[6] else "نامشخص"
                 }
@@ -637,7 +629,6 @@ def admin_teacher_queries():
                          queries=result_rows, 
                          majors=MAJORS,
                          selected_major=major)
-
 
 
 @app.route("/run_test_query", methods=["GET", "POST"])
