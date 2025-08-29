@@ -54,17 +54,17 @@
                     <tbody>
                         {% for table in tables %}
                         <tr>
-                            <td>{{ table.table_name }}</td>
-                            <td>{{ table.description or '-' }}</td>
+                            <td>{{ table[1] }}</td>  <!-- table_name -->
+                            <td>{{ table[2] or '-' }}</td>  <!-- description -->
                             <td>
-                                {% if table.created_at %}
-                                    {{ format_datetime_fa(table.created_at) }}
+                                {% if table[3] %}
+                                    {{ format_datetime_fa(table[3]) }}
                                 {% else %}
                                     نامشخص
                                 {% endif %}
-                            </td>
+                            </td>  <!-- created_at -->
                             <td>
-                                <a href="{{ url_for('admin_delete_table', table_id=table.id) }}" 
+                                <a href="{{ url_for('admin_delete_table', table_id=table[0]) }}" 
                                    class="btn btn-danger btn-sm" 
                                    onclick="return confirm('آیا از حذف این جدول اطمینان دارید؟')">
                                     حذف
