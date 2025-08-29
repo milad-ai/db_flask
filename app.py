@@ -384,13 +384,7 @@ def run_test_query():
     if request.method == "POST":
         # بررسی اگر دکمه ارسال به مدرس زده شده
         if "send_to_teacher" in request.form:
-            query_text = request.form.get("query", "").strip()
-            output_json = request.form.get("output", "")
-            
-            # ذخیره اطلاعات در session برای استفاده در مسیر send_to_teacher
-            session["teacher_query"] = query_text
-            session["teacher_output"] = output_json
-            
+            # استفاده از اطلاعاتی که قبلاً در session ذخیره شده
             return redirect(url_for("send_to_teacher"))
         
         # اجرای کوئری معمولی
@@ -413,16 +407,18 @@ def run_test_query():
                 rows = result.fetchall()
                 output = {"columns": columns, "rows": rows}
                 
-                # ذخیره خروجی در session برای استفاده بعدی
-                session["current_output"] = json.dumps({
+                # ذخیره کوئری و خروجی در session برای استفاده در ارسال به مدرس
+                session["teacher_query"] = query_text
+                session["teacher_output"] = json.dumps({
                     "columns": columns,
-                    "rows": [list(row) for row in rows]  # تبدیل tuple به list برای JSON
+                    "rows": [list(row) for row in rows]
                 })
                 
         except Exception as e:
             error = f"خطا در اجرای SQL: {e}"
 
     return render_template("test_sql_runner.html", output=output, query=query_text, error=error)
+
 
 @app.route("/admin/login", methods=["GET", "POST"])
 def admin_login():
