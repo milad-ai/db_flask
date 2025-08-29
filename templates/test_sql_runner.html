@@ -1,10 +1,11 @@
+
 {% extends "base.html" %}
 {% block content %}
 <div class="container mt-4" style="direction: ltr;">
     <!-- Header ساده با انیمیشن موشک -->
     <div class="header-section text-center mb-4">
         <div class="rocket-icon">🚀</div>
-        <h4 class="mb-3" dir="ltr">تمرین روی جدول آزمایشی</h4>
+<h4 class="mb-3" dir="ltr">   تمرین روی جدول آزمایشی </h4>
     </div>
 
     <form method="POST">
@@ -13,12 +14,6 @@
         </div>
         <button type="submit" class="btn btn-primary">اجرای کوئری</button>
         <a href="{{ url_for('dashboard') }}" class="btn btn-secondary">بازگشت به داشبورد</a>
-        
-        {% if output or error %}
-        <button type="button" class="btn btn-success ms-2" id="send-to-teacher-btn" data-bs-toggle="modal" data-bs-target="#sendModal">
-            <i class="bi bi-send"></i> ارسال برای مدرس
-        </button>
-        {% endif %}
     </form>
 
     {% if output or error %}
@@ -50,32 +45,6 @@
     </div>
     {% endif %}
     {% endif %}
-</div>
-
-<!-- مودال تأیید ارسال -->
-<div class="modal fade" id="sendModal" tabindex="-1" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title">ارسال برای مدرس</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                <p>آیا مطمئن هستید که می‌خواهید این کوئری و خروجی آن را برای مدرس ارسال کنید؟</p>
-                <div class="alert alert-info">
-                    <i class="bi bi-info-circle"></i> این ارسال در سیستم ثبت شده و مدرس می‌تواند آن را مشاهده کند.
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">انصراف</button>
-                <form method="POST" action="{{ url_for('send_to_teacher') }}">
-                    <input type="hidden" name="query" value="{{ query or '' }}">
-                    <input type="hidden" name="output" value="{{ output | tojson if output else '' }}">
-                    <button type="submit" class="btn btn-success">تأیید و ارسال</button>
-                </form>
-            </div>
-        </div>
-    </div>
 </div>
 
 <style>
