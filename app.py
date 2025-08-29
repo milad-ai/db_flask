@@ -670,15 +670,15 @@ def admin_teacher_queries():
                          majors=MAJORS,
                          selected_major=major)
 
-# مسیر ارسال کوئری برای مدرس
-@app.route("/send_to_teacher", methods=["POST"])
+@app.route("/send_to_teacher", methods=["GET"])
 def send_to_teacher():
     if "student_id" not in session:
         flash("ابتدا وارد شوید.", "warning")
         return redirect(url_for("login"))
     
-    query = request.form.get("query")
-    output_json = request.form.get("output")
+    # دریافت اطلاعات از session
+    query = session.get("teacher_query", "")
+    output_json = session.get("teacher_output", "")
     
     try:
         output = json.loads(output_json) if output_json else None
@@ -688,7 +688,7 @@ def send_to_teacher():
     # ذخیره اطلاعات ارسال در دیتابیس
     try:
         with engine.begin() as conn:
-            # ایجاد جدول اگر وجود ندارد (با syntax مناسب PostgreSQL)
+            # ایجاد جدول اگر وجود ندارد
             conn.execute(text("""
                 CREATE TABLE IF NOT EXISTS teacher_queries (
                     id SERIAL PRIMARY KEY,
@@ -713,9 +713,13 @@ def send_to_teacher():
                     "student_name": session["name"],
                     "major": session["major"],
                     "query": query,
-                    "output": json.dumps(output) if output else None
+                    "output": output_json  # ذخیره به صورت JSON
                 }
             )
+        
+        # پاک کردن اطلاعات از session
+        session.pop("teacher_query", None)
+        session.pop("teacher_output", None)
         
         flash('کوئری با موفقیت برای مدرس ارسال شد.', 'success')
     except Exception as e:
@@ -723,7 +727,6 @@ def send_to_teacher():
         flash('خطا در ارسال کوئری برای مدرس.', 'danger')
     
     return redirect(url_for('run_test_query'))
-
 
 @app.route("/test_date")
 def test_date():
